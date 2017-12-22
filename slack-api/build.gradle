@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-//apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven'
 
-group = 'com.github.pschroen'
+group = 'com.github.m0d'
 
 android {
     compileSdkVersion 27
@@ -28,12 +28,17 @@ android {
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
-    implementation 'cz.msebera.android:httpclient:4.4.1.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
-    implementation "com.squareup.okhttp3:logging-interceptor:3.9.1"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.0"
+    implementation "cz.msebera.android:httpclient:4.4.1.2"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.0"
+
+    compileOnly "com.squareup.okhttp3:okhttp:$okhttp_version"
+    compileOnly "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    compileOnly "io.reactivex.rxjava2:rxandroid:$rxandroid2_version"
+    compileOnly "io.reactivex.rxjava2:rxjava:$rxjava2_version"
+    compileOnly "com.github.ajalt:timberkt:$timberkt_version"
+
     testCompile 'junit:junit:4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
     mavenCentral()

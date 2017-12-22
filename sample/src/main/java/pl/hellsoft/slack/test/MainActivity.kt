@@ -1,25 +1,30 @@
 package pl.hellsoft.slack.test
 
+import allbegray.slack.wrapper.SlackApiWrapper
+import allbegray.slack.wrapper.model.AuthEvent
+import allbegray.slack.wrapper.model.ConnectionEvent
+import allbegray.slack.wrapper.model.MessageEvent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import com.github.ajalt.timberkt.d
 import com.github.ajalt.timberkt.e
-import com.github.ajalt.timberkt.w
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 /**
  * @author Grzegorz Pawełczuk
- * @email gpawelczuk@hellsoft.pl
- * @since 19.12.2017
+ * @email grzegorz.pawelczuk@ftlearning.com
+ * Nikkei FT Learning Limited
+ * @since 22.12.2017
  */
 
 class MainActivity : AppCompatActivity() {
 
     private var disposables : CompositeDisposable = CompositeDisposable()
-    private val mSlackApiWrapper by lazy { SlackApiWrapper("xoxp-") }
+    /* https://api.slack.com/custom-integrations/legacy-tokens */
+    private val mSlackApiWrapper by lazy { SlackApiWrapper("xoxp-XXXXXXXX") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,27 +37,14 @@ class MainActivity : AppCompatActivity() {
         mSlackApiWrapper.init()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    with(mSlackApiWrapper) {
-                        connectionListener()
-                                .threadSafe()
-                                .subscribe({ connected -> w { "connectionListener : $connected" } }, { error ->
-                                    e { "Error0 ${error.message}" }
-                                })
-
-                        authListener()
-                                .threadSafe()
-                                .subscribe({ authorized -> w { "authListener : $authorized" } }, { error -> e { "Error1  ${error.message}" } })
-
-                        onMessageReceived()
-                                .threadSafe()
-                                .subscribe({ message -> w { "onMessageReceived : $message" } }, { error -> e { "Error2 ${error.message}" } })
-
-                        connect()
-                                .threadSafe()
-                                .subscribe({ connect -> w { "connect : $connect" } }, { error -> e { "Error3 ${error.message}" }; error.printStackTrace() })
+                .subscribe({ event ->
+                    when(event){
+                        is AuthEvent -> d{ "AuthEvent received: $event" }
+                        is ConnectionEvent -> d{ "ConnectionEvent received: $event" }
+                        is MessageEvent -> d{ "MessageEvent received: $event" }
+                        else -> d{ "TODO Event received: $event" }
                     }
-                },{ error : Throwable -> e { "Error5 ${error.message}" }})
+                },{ error : Throwable -> e { "Error ${error.message}" }})
     }
 
     private fun unregister() {
@@ -76,9 +68,4 @@ class MainActivity : AppCompatActivity() {
         }
         super.onDestroy()
     }
-}
-
-private fun <T> Observable<T>.threadSafe(): Observable<T> {
-    return this.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
 }

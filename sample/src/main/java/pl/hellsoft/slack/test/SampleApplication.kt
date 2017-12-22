@@ -6,8 +6,9 @@ import com.github.ajalt.timberkt.Timber
 
 /**
  * @author Grzegorz Pawełczuk
- * @email gpawelczuk@hellsoft.pl
- * @since 19.12.2017
+ * @email grzegorz.pawelczuk@ftlearning.com
+ * Nikkei FT Learning Limited
+ * @since 22.12.2017
  */
 
 open class SampleApplication : Application() {

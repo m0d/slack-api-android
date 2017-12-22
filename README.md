@@ -1,8 +1,8 @@
 # slack-api-android [![Release](https://jitpack.io/v/pschroen/slack-api-android.svg)](https://jitpack.io/#pschroen/slack-api-android) [![Build Status](https://travis-ci.org/pschroen/slack-api-android.svg)](https://travis-ci.org/pschroen/slack-api-android)
 
-Port of [allbegray](https://github.com/allbegray)'s [slack-api](https://github.com/allbegray/slack-api). Used in the production app [Amp](https://ufo.ai/amp/).
+Port of [pschroen](https://github.com/pschroen)'s [slack-api](https://github.com/pschroen/slack-api-android).
 
-https://jitpack.io/#pschroen/slack-api-android
+https://jitpack.io/#m0d/slack-api-android
 
 Add it to your build.gradle with:
 
@@ -18,101 +18,96 @@ and:
 
 ```gradle
 dependencies {
-    compile 'com.github.pschroen:slack-api-android:c66cc8d997'
+        implementation 'com.github.m0d:slack-api-android:...'
+        implementation "com.squareup.okhttp3:okhttp:$okhttp_version" // lib compileOnly
+        implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version" // lib compileOnly
+        implementation "io.reactivex.rxjava2:rxandroid:$rxandroid2_version" // lib compileOnly
+        implementation "io.reactivex.rxjava2:rxjava:$rxjava2_version" // lib compileOnly
+        implementation "com.github.ajalt:timberkt:$timberkt_version" // lib compileOnly
 }
 ```
 
 ## Differences
 
-- Compiled with Java 7.
-- Commons Logging replaced with Android Logging.
-- `org.apache.http` classes replaced with HttpClient for Android [maintained by Marek Sebera](https://hc.apache.org/httpcomponents-client-4.5.x/android-port.html).
-- `org.asynchttpclient` classes replaced with [OkHttp](http://square.github.io/okhttp/) Web Sockets and [Socket.IO](https://github.com/socketio)'s [WebSocket.java](https://github.com/socketio/engine.io-client-java/blob/master/src/main/java/io/socket/engineio/client/transports/WebSocket.java) as a reference.
+- AS 3.x support
+- Kotlin wrapper
+- RX wrapper (Connection, Auth, Messages only - 4 now)
+- POJO deserialization
+- sample project
 
-## Usage
+## Example usage
 
-```java
-final String slackToken = mSharedPref.getString("slack_token", "");
+```kotlin
+class MainActivity : AppCompatActivity() {
 
-mWebApiClient = SlackClientFactory.createWebApiClient(slackToken);
-String webSocketUrl = mWebApiClient.startRealTimeMessagingApi().findPath("url").asText();
-mRtmClient = new SlackRealTimeMessagingClient(webSocketUrl);
+    private var disposables : CompositeDisposable = CompositeDisposable()
+    /* https://api.slack.com/custom-integrations/legacy-tokens */
+    private val mSlackApiWrapper by lazy { SlackApiWrapper("xoxp-XXXXXXXX") }
 
-mRtmClient.addListener(Event.HELLO, new EventListener() {
-
-    @Override
-    public void onMessage(JsonNode message) {
-        Authentication authentication = mWebApiClient.auth();
-        mBotId = authentication.getUser_id();
-
-        System.out.println("User id: " + mBotId);
-        System.out.println("Team name: " + authentication.getTeam());
-        System.out.println("User name: " + authentication.getUser());
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
     }
-});
 
-mRtmClient.addListener(Event.MESSAGE, new EventListener() {
+    private fun register(){
+        mSlackApiWrapper.init()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ event ->
+                    when(event){
+                        is AuthEvent -> d{ "AuthEvent received: $event" }
+                        is ConnectionEvent -> d{ "ConnectionEvent received: $event" }
+                        is MessageEvent -> d{ "MessageEvent received: $event" }
+                        else -> d{ "TODO Event received: $event" }
+                    }
+                },{ error : Throwable -> e { "Error ${error.message}" }})
+    }
 
-    @Override
-    public void onMessage(JsonNode message) {
-        String channelId = message.findPath("channel").asText();
-        String userId = message.findPath("user").asText();
-        String text = message.findPath("text").asText();
+    private fun unregister() {
+        mSlackApiWrapper.disconnect()
+    }
 
-        if (userId != null && !userId.equals(mBotId)) {
-            Channel channel;
-            try {
-                channel = mWebApiClient.getChannelInfo(channelId);
-            } catch (SlackResponseErrorException e) {
-                channel = null;
-            }
-            User user = mWebApiClient.getUserInfo(userId);
-            String userName = user.getName();
+    override fun onPause() {
+        super.onPause()
+        unregister()
+        disposables.clear()
+    }
 
-            System.out.println("Channel id: " + channelId);
-            System.out.println("Channel name: " + (channel != null ? "#" + channel.getName() : "DM"));
-            System.out.println("User id: " + userId);
-            System.out.println("User name: " + userName);
-            System.out.println("Text: " + text);
+    override fun onResume() {
+        super.onResume()
+        register()
+    }
 
-            // Copy cat
-            mWebApiClient.meMessage(channelId, userName + ": " + text);
+    override fun onDestroy() {
+        if(!disposables.isDisposed) {
+            disposables.dispose()
         }
+        super.onDestroy()
     }
-});
+}
 
-mRtmClient.connect();
 ```
 
-If you need to catch the close and failure events you can add listeners:
-
-```java
-mRtmClient.addCloseListener(new CloseListener() {
-
-    @Override
-    public void onClose() {
-        System.out.println("Connection closed");
-    }
-});
-
-mRtmClient.addFailureListener(new FailureListener() {
-
-    @Override
-    public void onFailure(Throwable t) {
-        Exception e = (Exception) t;
-
-        System.out.println("Failure message: " + e.getMessage());
-    }
-});
-```
 
 ## ProGuard
 
 ```
+-keep class com.fasterxml.jackson.databind.ObjectMapper {
+    public <methods>;
+    protected <methods>;
+}
+-keep class com.fasterxml.jackson.databind.ObjectWriter {
+    public ** writeValueAsString(**);
+}
+-keepnames class com.fasterxml.jackson.** { *; }
+-dontwarn com.fasterxml.jackson.databind.**
 -dontwarn allbegray.slack.**
 -keep class allbegray.slack.** {*;}
--dontwarn com.fasterxml.**
--keep class com.fasterxml.** {*;}
 -dontwarn okio.**
 -keep class okio.** {*;}
+-dontwarn com.squareup.okhttp3.**
+-dontwarn okhttp3.**
+
 ```
