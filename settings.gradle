@@ -1,1 +1,1 @@
-include ':slack-api'
+include ':slack-api', ':sample'
