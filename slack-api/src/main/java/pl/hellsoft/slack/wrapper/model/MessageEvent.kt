@@ -21,11 +21,12 @@ data class MessageEvent(
         val ts : String,
         val source_team : String?,
         val bot_id : String?,
-        val team : String,
+        val team : String?,
         val is_ephemeral : Boolean? = false,
         val message : MessageBody? = null,
         val subtype : String? = null,
-        val file : FileBody? = null
+        val file : FileBody? = null,
+        val reply_to: Int? = null
 ) : SlackApiEvent {
     fun getTimestamp() : Long =  Math.floor(ts.toDouble()).toLong() * 1000
 }

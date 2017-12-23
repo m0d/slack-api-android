@@ -18,7 +18,7 @@ and:
 
 ```gradle
 dependencies {
-        implementation 'com.github.m0d:slack-api-android:1.5.0'
+        implementation 'com.github.m0d:slack-api-android:1.5.2'
 
         implementation "com.squareup.okhttp3:okhttp:$okhttp_version" // lib compileOnly
         implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version" // lib compileOnly
@@ -106,5 +106,6 @@ class MainActivity : AppCompatActivity() {
 -keep class okio.** {*;}
 -dontwarn com.squareup.okhttp3.**
 -dontwarn okhttp3.**
+-keep class pl.hellsoft.slack.wrapper.model.** { *; }
 
 ```
