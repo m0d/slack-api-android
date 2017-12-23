@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.m0d'
+version = '1.4.2'
 
 android {
     compileSdkVersion 27
@@ -38,7 +39,7 @@ dependencies {
     compileOnly "io.reactivex.rxjava2:rxjava:$rxjava2_version"
     compileOnly "com.github.ajalt:timberkt:$timberkt_version"
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 repositories {
     mavenCentral()
