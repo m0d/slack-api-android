@@ -53,26 +53,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun register(){
-        mSlackApiWrapper.init()
+        val disposable = mSlackApiWrapper.init()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ event ->
-                    when(event){
-                        is AuthEvent -> d{ "AuthEvent received: $event" }
-                        is ConnectionEvent -> d{ "ConnectionEvent received: $event" }
-                        is MessageEvent -> d{ "MessageEvent received: $event" }
-                        else -> d{ "TODO Event received: $event" }
+                    when (event) {
+                        is AuthEvent -> d { "AuthEvent received: $event" }
+                        is ConnectionEvent -> d { "ConnectionEvent received: $event" }
+                        is MessageEvent -> d { "MessageEvent received: $event" }
+                        else -> d { "TODO Event received: $event" }
                     }
-                },{ error : Throwable -> e { "Error ${error.message}" }})
-    }
-
-    private fun unregister() {
-        mSlackApiWrapper.disconnect()
+                }, { error: Throwable -> e { "Error ${error.message}" } })
+        disposables.add(disposable)
     }
 
     override fun onPause() {
         super.onPause()
-        unregister()
+        mSlackApiWrapper.disconnect()
         disposables.clear()
     }
 
@@ -88,7 +85,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 }
-
 ```
 
 
