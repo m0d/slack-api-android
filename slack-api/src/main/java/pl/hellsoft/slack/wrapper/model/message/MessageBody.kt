@@ -1,4 +1,4 @@
-package allbegray.slack.wrapper.model.message
+package pl.hellsoft.slack.wrapper.model.message
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 

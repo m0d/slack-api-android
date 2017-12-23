@@ -1,9 +1,9 @@
 package pl.hellsoft.slack.test
 
-import allbegray.slack.wrapper.SlackApiWrapper
-import allbegray.slack.wrapper.model.AuthEvent
-import allbegray.slack.wrapper.model.ConnectionEvent
-import allbegray.slack.wrapper.model.MessageEvent
+import pl.hellsoft.slack.wrapper.SlackApiWrapper
+import pl.hellsoft.slack.wrapper.model.AuthEvent
+import pl.hellsoft.slack.wrapper.model.ConnectionEvent
+import pl.hellsoft.slack.wrapper.model.MessageEvent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar

@@ -1,8 +1,8 @@
-package allbegray.slack.wrapper.model
+package pl.hellsoft.slack.wrapper.model
 
-import allbegray.slack.wrapper.SlackApiEvent
-import allbegray.slack.wrapper.model.message.FileBody
-import allbegray.slack.wrapper.model.message.MessageBody
+import pl.hellsoft.slack.wrapper.SlackApiEvent
+import pl.hellsoft.slack.wrapper.model.message.FileBody
+import pl.hellsoft.slack.wrapper.model.message.MessageBody
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 /**

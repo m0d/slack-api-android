@@ -1,6 +1,6 @@
-package allbegray.slack.wrapper.model
+package pl.hellsoft.slack.wrapper.model
 
-import allbegray.slack.wrapper.SlackApiEvent
+import pl.hellsoft.slack.wrapper.SlackApiEvent
 
 /**
  * @author Grzegorz Pawełczuk

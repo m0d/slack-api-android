@@ -1,12 +1,12 @@
-package allbegray.slack.wrapper
+package pl.hellsoft.slack.wrapper
 
 import allbegray.slack.SlackClientFactory
 import allbegray.slack.rtm.Event
 import allbegray.slack.rtm.SlackRealTimeMessagingClient
 import allbegray.slack.webapi.SlackWebApiClient
-import allbegray.slack.wrapper.model.AuthEvent
-import allbegray.slack.wrapper.model.ConnectionEvent
-import allbegray.slack.wrapper.model.MessageEvent
+import pl.hellsoft.slack.wrapper.model.AuthEvent
+import pl.hellsoft.slack.wrapper.model.ConnectionEvent
+import pl.hellsoft.slack.wrapper.model.MessageEvent
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.ajalt.timberkt.e

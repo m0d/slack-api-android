@@ -1,4 +1,4 @@
-package allbegray.slack.wrapper
+package pl.hellsoft.slack.wrapper
 
 /**
  * @author Grzegorz Pawełczuk
