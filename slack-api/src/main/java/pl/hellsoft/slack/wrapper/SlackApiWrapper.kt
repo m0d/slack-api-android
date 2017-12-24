@@ -41,6 +41,8 @@ class SlackApiWrapper {
         }
     }
 
+    fun getWebApiCLient() = mWebApiClient
+
     private fun init(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
         try {

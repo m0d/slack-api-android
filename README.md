@@ -18,7 +18,7 @@ and:
 
 ```gradle
 dependencies {
-        implementation 'com.github.m0d:slack-api-android:1.6.0'
+        implementation 'com.github.m0d:slack-api-android:1.6.1'
 
         implementation "com.squareup.okhttp3:okhttp:$okhttp_version" // lib compileOnly
         implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version" // lib compileOnly
