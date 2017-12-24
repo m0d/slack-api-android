@@ -10,4 +10,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class MessageBody( val text: String )
+data class MessageBody(
+        val text: String?,
+        val user: String?,
+        val bot_id: String?,
+        val type: String?,
+        val subtype: String?,
+        val ts: String,
+        val attachments: List<AttachmentBody>? = emptyList()
+)

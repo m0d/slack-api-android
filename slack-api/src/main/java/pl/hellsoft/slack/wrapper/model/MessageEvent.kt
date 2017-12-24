@@ -17,7 +17,7 @@ data class MessageEvent(
         val type : String,
         val channel : String,
         val user : String?,
-        val text : String,
+        val text : String?,
         val ts : String,
         val source_team : String?,
         val bot_id : String?,
@@ -26,7 +26,8 @@ data class MessageEvent(
         val message : MessageBody? = null,
         val subtype : String? = null,
         val file : FileBody? = null,
-        val reply_to: Int? = null
+        val reply_to: Int? = null,
+        val previous_message: MessageBody? = null
 ) : SlackApiEvent {
     fun getTimestamp() : Long =  Math.floor(ts.toDouble()).toLong() * 1000
 }
