@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private var disposables : CompositeDisposable = CompositeDisposable()
     /* https://api.slack.com/custom-integrations/legacy-tokens */
-    private val mSlackApiWrapper by lazy { SlackApiWrapper("xoxp-XXXXXXXX") }
+    private val mSlackApiWrapper by lazy { SlackApiWrapper() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun register(){
-        val disposable = mSlackApiWrapper.init()
+        val disposable = mSlackApiWrapper.init("xoxp-XXXXXXXX")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ event ->

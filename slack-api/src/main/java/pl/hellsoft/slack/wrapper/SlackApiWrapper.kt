@@ -23,13 +23,15 @@ import io.reactivex.schedulers.Schedulers
  * @since 22.12.2017
  */
 
-class SlackApiWrapper(val token: String) {
+class SlackApiWrapper {
+    private var mToken : String? = null
     private var mWebApiClient: SlackWebApiClient? = null
     private var mWebSocketUrl: String? = null
     private var mRtmClient: SlackRealTimeMessagingClient? = null
     private var mConnected: Boolean = false
 
-    fun init(): Observable<SlackApiEvent> = Observable.create { emitter ->
+    fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
+        mToken = token
         if(mConnected){
             disconnect{
                 init(emitter)
@@ -42,7 +44,7 @@ class SlackApiWrapper(val token: String) {
     private fun init(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
         try {
-            mWebApiClient = SlackClientFactory.createWebApiClient(token)
+            mWebApiClient = SlackClientFactory.createWebApiClient(mToken)
             mWebSocketUrl = mWebApiClient?.startRealTimeMessagingApi()?.findPath("url")?.asText()
             mRtmClient = SlackRealTimeMessagingClient(mWebSocketUrl)
         }catch (e: Exception){
