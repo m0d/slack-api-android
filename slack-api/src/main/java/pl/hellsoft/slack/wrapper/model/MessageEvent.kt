@@ -2,8 +2,8 @@ package pl.hellsoft.slack.wrapper.model
 
 import pl.hellsoft.slack.wrapper.SlackApiEvent
 import pl.hellsoft.slack.wrapper.model.message.FileBody
+import pl.hellsoft.slack.wrapper.model.message.MessageAttachment
 import pl.hellsoft.slack.wrapper.model.message.MessageBody
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 /**
  * @author Grzegorz Pawełczuk
@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
  * @since 22.12.2017
  */
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class MessageEvent(
         val type : String,
         val channel : String,
@@ -27,7 +26,10 @@ data class MessageEvent(
         val subtype : String? = null,
         val file : FileBody? = null,
         val reply_to: Int? = null,
-        val previous_message: MessageBody? = null
+        val previous_message: MessageBody? = null,
+        val mrkdwn: Boolean? = false,
+        val attachments: List<MessageAttachment>
+
 ) : SlackApiEvent {
     fun getTimestamp() : Long =  Math.floor(ts.toDouble()).toLong() * 1000
 }

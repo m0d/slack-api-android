@@ -4,17 +4,18 @@ import allbegray.slack.SlackClientFactory
 import allbegray.slack.rtm.Event
 import allbegray.slack.rtm.SlackRealTimeMessagingClient
 import allbegray.slack.webapi.SlackWebApiClient
-import pl.hellsoft.slack.wrapper.model.AuthEvent
-import pl.hellsoft.slack.wrapper.model.ConnectionEvent
-import pl.hellsoft.slack.wrapper.model.MessageEvent
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import android.annotation.SuppressLint
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.w
+import com.google.gson.GsonBuilder
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.schedulers.Schedulers
+import pl.hellsoft.slack.wrapper.model.AuthEvent
+import pl.hellsoft.slack.wrapper.model.ConnectionEvent
+import pl.hellsoft.slack.wrapper.model.MessageEvent
+import pl.hellsoft.slack.wrapper.model.MySlack
 
 /**
  * @author Grzegorz Pawełczuk
@@ -26,9 +27,9 @@ import io.reactivex.schedulers.Schedulers
 class SlackApiWrapper {
     private var mToken : String? = null
     private var mWebApiClient: SlackWebApiClient? = null
-    private var mWebSocketUrl: String? = null
     private var mRtmClient: SlackRealTimeMessagingClient? = null
     private var mConnected: Boolean = false
+    private val mGson by lazy { GsonBuilder().create() }
 
     fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
         mToken = token
@@ -41,14 +42,19 @@ class SlackApiWrapper {
         }
     }
 
-    fun getWebApiCLient() = mWebApiClient
+    fun getWebApiClient() = mWebApiClient
 
     private fun init(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
         try {
             mWebApiClient = SlackClientFactory.createWebApiClient(mToken)
-            mWebSocketUrl = mWebApiClient?.startRealTimeMessagingApi()?.findPath("url")?.asText()
-            mRtmClient = SlackRealTimeMessagingClient(mWebSocketUrl)
+            val startRealTimeMessagingApi = mWebApiClient?.startRealTimeMessagingApi()
+            startRealTimeMessagingApi?.run {
+                val me : MySlack? = mGson.fromJson(startRealTimeMessagingApi.toString(), MySlack::class.java)
+                me?.run {
+                    mRtmClient = SlackRealTimeMessagingClient(me.url)
+                }
+            }
         }catch (e: Exception){
             emitter.onNext(ConnectionEvent(false, e.message))
             shouldConnect = false
@@ -65,10 +71,6 @@ class SlackApiWrapper {
         mRtmClient?.connect() ?: false
     } catch (e: Exception) {
         false
-    }
-
-    private val mObjectMapper: ObjectMapper by lazy {
-        ObjectMapper().registerKotlinModule()
     }
 
     private fun addListeners(emitter: ObservableEmitter<SlackApiEvent>) {
@@ -92,14 +94,19 @@ class SlackApiWrapper {
 
         mRtmClient?.addListener(Event.MESSAGE) { messageNode ->
             w { "Event.MESSAGE: $messageNode" }
-            val messageEvent = mObjectMapper.treeToValue(messageNode, MessageEvent::class.java)
-            messageEvent?.run {
-                emitter.onNext(messageEvent)
+            try {
+                val messageEvent : MessageEvent? = mGson.fromJson(messageNode.toString(), MessageEvent::class.java)
+                messageEvent?.run {
+                    emitter.onNext(messageEvent)
+                }
+            }catch (err: Exception){
+                e{err.localizedMessage}
             }
         }
     }
 
-    fun disconnect( callback: (() -> Unit)? = null) {
+    @SuppressLint("CheckResult")
+    fun disconnect(callback: (() -> Unit)? = null) {
         mRtmClient?.run {
             close()
         }

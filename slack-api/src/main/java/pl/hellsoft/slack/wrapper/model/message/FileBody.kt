@@ -1,6 +1,5 @@
 package pl.hellsoft.slack.wrapper.model.message
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 /**
  * @author Grzegorz Pawełczuk
@@ -8,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
  * Nikkei FT Learning Limited
  * @since 22.12.2017
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class FileBody(
         val id: String,
         val created: Int,
