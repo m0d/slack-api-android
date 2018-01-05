@@ -14,5 +14,6 @@ data class MessageAttachment(
         val title_link: String? = null,
         val color: String? = null,
         val mrkdwn_in: List<String>? = null,
-        val fallback: String? = null
+        val fallback: String? = null,
+        val pretext: String? = null
 )
