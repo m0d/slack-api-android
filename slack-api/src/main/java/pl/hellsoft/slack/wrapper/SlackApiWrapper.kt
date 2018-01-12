@@ -35,16 +35,16 @@ open class SlackApiWrapper {
         mToken = token
         if(mConnected){
             disconnect{
-                init(emitter)
+                prepare(emitter)
             }
         }else {
-            init(emitter)
+            prepare(emitter)
         }
     }
 
     fun getWebApiClient() = mWebApiClient
 
-    private fun init(emitter: ObservableEmitter<SlackApiEvent>){
+    private fun prepare(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
         try {
             mWebApiClient = SlackClientFactory.createWebApiClient(mToken)
