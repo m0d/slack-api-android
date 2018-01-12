@@ -24,7 +24,7 @@ import pl.hellsoft.slack.wrapper.model.MySlack
  * @since 22.12.2017
  */
 
-class SlackApiWrapper {
+open class SlackApiWrapper {
     private var mToken : String? = null
     private var mWebApiClient: SlackWebApiClient? = null
     private var mRtmClient: SlackRealTimeMessagingClient? = null
