@@ -31,7 +31,7 @@ open class SlackApiWrapper {
     private var mConnected: Boolean = false
     private val mGson by lazy { GsonBuilder().create() }
 
-    fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
+    open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
         mToken = token
         if(mConnected){
             disconnect{
