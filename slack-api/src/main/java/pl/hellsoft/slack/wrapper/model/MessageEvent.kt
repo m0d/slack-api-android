@@ -13,23 +13,22 @@ import pl.hellsoft.slack.wrapper.model.message.MessageBody
  */
 
 data class MessageEvent(
-        val type : String,
-        val channel : String,
-        val user : String?,
-        val text : String?,
-        val ts : String,
-        val source_team : String?,
-        val bot_id : String?,
-        val team : String?,
-        val is_ephemeral : Boolean? = false,
-        val message : MessageBody? = null,
-        val subtype : String? = null,
-        val file : FileBody? = null,
-        val reply_to: Int? = null,
-        val previous_message: MessageBody? = null,
-        val mrkdwn: Boolean? = false,
-        val attachments: List<MessageAttachment>
-
+        var type : String,
+        var channel : String,
+        var user : String? = null,
+        var text : String? = null,
+        var ts : String,
+        var source_team : String? = null,
+        var bot_id : String? = null,
+        var team : String? = null,
+        var is_ephemeral : Boolean? = false,
+        var message : MessageBody? = null,
+        var subtype : String? = null,
+        var file : FileBody? = null,
+        var reply_to: Int? = null,
+        var previous_message: MessageBody? = null,
+        var mrkdwn: Boolean? = false,
+        var attachments: List<MessageAttachment>? = emptyList()
 ) : SlackApiEvent {
     fun getTimestamp() : Long =  Math.floor(ts.toDouble()).toLong() * 1000
 }
