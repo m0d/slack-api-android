@@ -147,6 +147,20 @@ public class SlackWebApiClientImpl implements SlackWebApiClient {
 	}
 
 	@Override
+	public HistoryEvents getChannelHistoryEvents(String channel, String latest, String oldest, boolean inclusive, int count, boolean unreads) {
+
+		ChannelHistoryMethod channelHistoryMethod = new ChannelHistoryMethod(channel);
+		channelHistoryMethod.setLatest(latest);
+		channelHistoryMethod.setOldest(oldest);
+		channelHistoryMethod.setInclusive(inclusive);
+		channelHistoryMethod.setCount(count);
+		channelHistoryMethod.setUnreads(unreads);
+
+		JsonNode retNode = call(channelHistoryMethod);
+		return readValue(retNode, null, HistoryEvents.class);
+	}
+
+	@Override
 	public Channel getChannelInfo(String channel) {
 		JsonNode retNode = call(new ChannelInfoMethod(channel));
 		return readValue(retNode, "channel", Channel.class);

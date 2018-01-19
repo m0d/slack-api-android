@@ -1,5 +1,6 @@
 package pl.hellsoft.slack.wrapper.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import pl.hellsoft.slack.wrapper.SlackApiEvent
 import pl.hellsoft.slack.wrapper.model.message.FileBody
 import pl.hellsoft.slack.wrapper.model.message.MessageAttachment
@@ -12,6 +13,7 @@ import pl.hellsoft.slack.wrapper.model.message.MessageBody
  * @since 22.12.2017
  */
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class MessageEvent(
         var type : String,
         var channel : String,

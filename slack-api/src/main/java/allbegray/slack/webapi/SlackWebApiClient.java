@@ -27,6 +27,7 @@ public interface SlackWebApiClient {
 	History getChannelHistory(String channel);
 	History getChannelHistory(String channel, int count);
 	History getChannelHistory(String channel, String latest, String oldest, boolean inclusive, int count, boolean unreads);
+	HistoryEvents getChannelHistoryEvents(String channel, String latest, String oldest, boolean inclusive, int count, boolean unreads);
 	Channel getChannelInfo(String channel);
 	Channel inviteUserToChannel(String channel, String user);
 	Channel joinChannel(String name);
