@@ -43,9 +43,9 @@ dependencies {
     compileOnly "com.github.ajalt:timberkt:$timberkt_version"
 
     // testing http client
-    compileOnly 'com.google.code.gson:gson:2.8.2'
-    compileOnly 'com.squareup.retrofit2:retrofit:2.3.0'
-    compileOnly 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     testImplementation 'junit:junit:4.12'
 }

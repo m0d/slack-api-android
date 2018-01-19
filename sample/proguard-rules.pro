@@ -25,4 +25,6 @@
 -dontwarn retrofit2.Platform$Java8
 -keepattributes Signature
 -keepattributes Exceptions
--keep class allbegray.slack.webapi.retrofit.SlackWebApiClientImplv2.** { *; }
+-keep class allbegray.slack.webapi.retrofit.model.** { *; }
+
+-dontwarn javax.annotation.**
