@@ -1,5 +1,6 @@
 package allbegray.slack.webapi.retrofit
 
+import allbegray.slack.type.HistoryEvents
 import allbegray.slack.webapi.SlackWebApiConstants
 import allbegray.slack.webapi.retrofit.model.AuthTestResponse
 import allbegray.slack.webapi.retrofit.model.PostMessageResponse
@@ -28,5 +29,20 @@ interface SlackService {
     fun auth(@Query("token") token: String) : Observable<AuthTestResponse>
 
     @POST("$apiPath/${SlackWebApiConstants.CHAT_POST_MESSAGE}")
-    fun postMessage(@Query("token") token: String, @Query("channel") channel: String, @Query("text") message: String, @Query("as_user") asUser: Boolean = true) : Observable<PostMessageResponse>
+    fun postMessage(
+            @Query("token") token: String,
+            @Query("channel") channel: String,
+            @Query("text") message: String,
+            @Query("as_user") asUser: Boolean = true) : Observable<PostMessageResponse>
+
+    @GET("$apiPath/${SlackWebApiConstants.CHANNELS_HISTORY}")
+    fun getChannelHistoryEvents(
+            @Query("token") token: String,
+            @Query("channel") channel: String,
+            @Query("latest") latest: String?,
+            @Query("oldest") oldest: String?,
+            @Query("inclusive") inclusive: Boolean?,
+            @Query("count") count: Int,
+            @Query("unreads") unreads: Boolean?) : Observable<HistoryEvents>
+
 }

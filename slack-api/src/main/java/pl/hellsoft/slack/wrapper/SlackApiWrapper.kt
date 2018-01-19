@@ -3,6 +3,7 @@ package pl.hellsoft.slack.wrapper
 import allbegray.slack.BuildConfig
 import allbegray.slack.rtm.Event
 import allbegray.slack.rtm.SlackRealTimeMessagingClient
+import allbegray.slack.type.HistoryEvents
 import allbegray.slack.webapi.SlackWebApiConstants
 import allbegray.slack.webapi.retrofit.SlackService
 import allbegray.slack.webapi.retrofit.WrapperApiClient
@@ -174,6 +175,10 @@ open class SlackApiWrapper : WrapperApiClient, WrapperRtmClient {
 
     override fun postMessage(channel: String, message: String) : Observable<PostMessageResponse> {
         mToken.run { return service.postMessage(this, channel, message) }
+    }
+
+    override fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?): Observable<HistoryEvents> {
+        mToken.run { return service.getChannelHistoryEvents(this, channel, latest, oldest, inclusive, count, unreads) }
     }
 
     override fun rtmStart(): Observable<MySlack> {
