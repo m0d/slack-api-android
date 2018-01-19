@@ -45,6 +45,9 @@ import allbegray.slack.webapi.method.users.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+
 import allbegray.slack.exception.SlackResponseErrorException;
 import allbegray.slack.webapi.method.usergroups.users.UsergroupsUsersListMethod;
 import cz.msebera.android.httpclient.HttpEntity;
@@ -143,6 +146,7 @@ public class SlackWebApiClientImpl implements SlackWebApiClient {
 		channelHistoryMethod.setUnreads(unreads);
 
 		JsonNode retNode = call(channelHistoryMethod);
+
 		return readValue(retNode, null, History.class);
 	}
 
@@ -157,7 +161,14 @@ public class SlackWebApiClientImpl implements SlackWebApiClient {
 		channelHistoryMethod.setUnreads(unreads);
 
 		JsonNode retNode = call(channelHistoryMethod);
-		return readValue(retNode, null, HistoryEvents.class);
+
+        HistoryEvents historyEvents;
+        try {
+            historyEvents = new GsonBuilder().create().fromJson(retNode.toString(), HistoryEvents.class);
+        } catch( JsonSyntaxException exp ) {
+            historyEvents = null;
+        }
+        return historyEvents;
 	}
 
 	@Override
