@@ -47,7 +47,7 @@ open class SlackApiWrapper {
     private fun prepare(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
         try {
-            mWebApiClient = SlackClientFactory.createWebApiClient(mToken)
+            mWebApiClient = SlackClientFactory.createWebApiClientV2(mToken)
             val startRealTimeMessagingApi = mWebApiClient?.startRealTimeMessagingApi()
             startRealTimeMessagingApi?.run {
                 val me : MySlack? = mGson.fromJson(startRealTimeMessagingApi.toString(), MySlack::class.java)

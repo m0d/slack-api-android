@@ -7,6 +7,7 @@ import allbegray.slack.rtm.ProxyServerInfo;
 import allbegray.slack.rtm.SlackRealTimeMessagingClient;
 import allbegray.slack.webapi.SlackWebApiClient;
 import allbegray.slack.webapi.SlackWebApiClientImpl;
+import allbegray.slack.webapi.retrofit.SlackWebApiClientImplv2;
 import allbegray.slack.webhook.SlackWebhookClient;
 
 public abstract class SlackClientFactory {
@@ -15,6 +16,10 @@ public abstract class SlackClientFactory {
 
 	public static SlackWebApiClient createWebApiClient(String token) {
 		return new SlackWebApiClientImpl(token);
+	}
+
+	public static SlackWebApiClient createWebApiClientV2(String token) {
+		return new SlackWebApiClientImplv2(token);
 	}
 
 	public static SlackWebApiClient createWebApiClient(String token, ObjectMapper mapper) {
