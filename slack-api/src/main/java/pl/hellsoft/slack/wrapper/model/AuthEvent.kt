@@ -1,6 +1,6 @@
 package pl.hellsoft.slack.wrapper.model
 
-import allbegray.slack.type.Authentication
+import allbegray.slack.webapi.retrofit.model.AuthTestResponse
 import pl.hellsoft.slack.wrapper.SlackApiEvent
 
 /**
@@ -10,4 +10,4 @@ import pl.hellsoft.slack.wrapper.SlackApiEvent
  * @since 22.12.2017
  */
 
-data class AuthEvent( val auth : Authentication) : SlackApiEvent
+data class AuthEvent( val auth : AuthTestResponse) : SlackApiEvent
