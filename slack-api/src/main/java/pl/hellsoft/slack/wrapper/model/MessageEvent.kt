@@ -14,7 +14,7 @@ import pl.hellsoft.slack.wrapper.model.message.MessageBody
 
 data class MessageEvent(
         var type : String,
-        var channel : String,
+        var channel : String? = null,
         var user : String? = null,
         var text : String? = null,
         var ts : String,
