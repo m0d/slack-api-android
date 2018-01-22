@@ -1,10 +1,10 @@
 package allbegray.slack.webapi.retrofit
 
-import allbegray.slack.type.Bot
 import allbegray.slack.type.HistoryEvents
 import allbegray.slack.webapi.SlackWebApiConstants
 import allbegray.slack.webapi.retrofit.model.AuthTestResponse
 import allbegray.slack.webapi.retrofit.model.BotInfoResponse
+import allbegray.slack.webapi.retrofit.model.MeMessageResponse
 import allbegray.slack.webapi.retrofit.model.PostMessageResponse
 import io.reactivex.Observable
 import pl.hellsoft.slack.wrapper.model.MySlack
@@ -41,6 +41,12 @@ interface SlackService {
             @Query("channel") channel: String,
             @Query("text") message: String,
             @Query("as_user") asUser: Boolean = true) : Observable<PostMessageResponse>
+
+    @POST("$apiPath/${SlackWebApiConstants.CHAT_ME_MESSAGE}")
+    fun meMessage(
+            @Query("token") token: String,
+            @Query("channel") channel: String,
+            @Query("text") message: String) : Observable<MeMessageResponse>
 
     @GET("$apiPath/${SlackWebApiConstants.CHANNELS_HISTORY}")
     fun getChannelHistoryEvents(

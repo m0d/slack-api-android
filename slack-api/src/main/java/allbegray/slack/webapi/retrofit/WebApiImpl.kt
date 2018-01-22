@@ -1,8 +1,8 @@
 package allbegray.slack.webapi.retrofit
 
-import allbegray.slack.type.Bot
 import allbegray.slack.type.HistoryEvents
 import allbegray.slack.webapi.retrofit.model.BotInfoResponse
+import allbegray.slack.webapi.retrofit.model.MeMessageResponse
 import allbegray.slack.webapi.retrofit.model.PostMessageResponse
 import io.reactivex.Observable
 
@@ -23,5 +23,9 @@ class WebApiImpl(private val service: SlackService, private val token: String) :
 
     override fun getBotInfo(bot: String): Observable<BotInfoResponse> {
         return service.getBotInfo(token, bot)
+    }
+
+    override fun meMessage(channel: String, message: String) : Observable<MeMessageResponse> {
+        return service.meMessage(token, channel, message)
     }
 }
