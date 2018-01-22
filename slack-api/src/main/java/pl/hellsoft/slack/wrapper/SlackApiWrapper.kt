@@ -3,12 +3,8 @@ package pl.hellsoft.slack.wrapper
 import allbegray.slack.BuildConfig
 import allbegray.slack.rtm.Event
 import allbegray.slack.rtm.SlackRealTimeMessagingClient
-import allbegray.slack.type.HistoryEvents
 import allbegray.slack.webapi.SlackWebApiConstants
-import allbegray.slack.webapi.retrofit.SlackService
-import allbegray.slack.webapi.retrofit.WrapperApiClient
-import allbegray.slack.webapi.retrofit.WrapperRtmClient
-import allbegray.slack.webapi.retrofit.model.PostMessageResponse
+import allbegray.slack.webapi.retrofit.*
 import android.annotation.SuppressLint
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.w
@@ -24,7 +20,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import pl.hellsoft.slack.wrapper.model.AuthEvent
 import pl.hellsoft.slack.wrapper.model.ConnectionEvent
 import pl.hellsoft.slack.wrapper.model.MessageEvent
-import pl.hellsoft.slack.wrapper.model.MySlack
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -37,7 +32,7 @@ import java.util.concurrent.TimeUnit
  * @since 22.12.2017
  */
 
-open class SlackApiWrapper : WrapperApiClient, WrapperRtmClient {
+open class SlackApiWrapper {
     private var compositeDisposable = CompositeDisposable()
     private lateinit var mToken : String
     private val timeoutInSeconds = 6L
@@ -46,6 +41,9 @@ open class SlackApiWrapper : WrapperApiClient, WrapperRtmClient {
     private var mRtmClient: SlackRealTimeMessagingClient? = null
     private var mConnected: Boolean = false
     private val mGson by lazy { GsonBuilder().create() }
+
+    private lateinit var apiInterface: WrapperApiInterface
+    private lateinit var rtmInterface: WrapperRtmInterface
 
     init {
         val okHttpClient = prepareOkHttpBuilder().build()
@@ -75,40 +73,36 @@ open class SlackApiWrapper : WrapperApiClient, WrapperRtmClient {
 
     open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
         mToken = token
+        apiInterface = WebApiImpl(service, mToken)
+        rtmInterface = RtmApiImpl(service, mToken)
         if(mConnected){
             disconnect{
-                w { "connected!! --- disconnect & prepare!" }
                 prepare(emitter)
             }
         } else {
-            w { "not connected prepare!" }
             prepare(emitter)
         }
     }
 
     private fun prepare(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
-        w { "prepare.shouldConnect: $shouldConnect" }
-        val disposable = rtmStart()
+        val disposable = rtmInterface.rtmStart()
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     response ->
-                    w { "onNext" }
                     response?.run {
                     mRtmClient = SlackRealTimeMessagingClient(response.url)
                 }
                 }, {
-                    error -> w { "onError" }
+                    error ->
                     emitter.onNext(ConnectionEvent(false, error.message))
                     shouldConnect = false
                 }, {
-                    w { "onComplete. shouldConnect:  $shouldConnect" + " connect -> " + connect() }
                     if (shouldConnect && !connect()) {
 
                         emitter.onNext(ConnectionEvent(false))
                     } else {
-                        w { "addListeners" }
                         addListeners(emitter)
                     }
                 })
@@ -173,15 +167,11 @@ open class SlackApiWrapper : WrapperApiClient, WrapperRtmClient {
         callback?.invoke()
     }
 
-    override fun postMessage(channel: String, message: String) : Observable<PostMessageResponse> {
-        mToken.run { return service.postMessage(this, channel, message) }
+    fun getWebApiInterface() : WrapperApiInterface {
+        return apiInterface
     }
 
-    override fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?): Observable<HistoryEvents> {
-        mToken.run { return service.getChannelHistoryEvents(this, channel, latest, oldest, inclusive, count, unreads) }
-    }
-
-    override fun rtmStart(): Observable<MySlack> {
-        mToken.run { return service.rtmStart(this) }
+    fun getRtminterface() : WrapperRtmInterface {
+        return rtmInterface
     }
 }
