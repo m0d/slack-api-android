@@ -1,6 +1,8 @@
 package allbegray.slack.webapi.retrofit
 
+import allbegray.slack.type.Bot
 import allbegray.slack.type.HistoryEvents
+import allbegray.slack.webapi.retrofit.model.BotInfoResponse
 import allbegray.slack.webapi.retrofit.model.PostMessageResponse
 import io.reactivex.Observable
 
@@ -17,5 +19,9 @@ class WebApiImpl(private val service: SlackService, private val token: String) :
 
     override fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?): Observable<HistoryEvents> {
         return service.getChannelHistoryEvents(token, channel, latest, oldest, inclusive, count, unreads)
+    }
+
+    override fun getBotInfo(bot: String): Observable<BotInfoResponse> {
+        return service.getBotInfo(token, bot)
     }
 }

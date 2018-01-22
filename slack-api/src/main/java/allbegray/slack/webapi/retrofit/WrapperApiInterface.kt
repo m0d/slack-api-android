@@ -1,6 +1,8 @@
 package allbegray.slack.webapi.retrofit
 
+import allbegray.slack.type.Bot
 import allbegray.slack.type.HistoryEvents
+import allbegray.slack.webapi.retrofit.model.BotInfoResponse
 import allbegray.slack.webapi.retrofit.model.PostMessageResponse
 import io.reactivex.Observable
 
@@ -13,4 +15,5 @@ import io.reactivex.Observable
 interface WrapperApiInterface {
     fun postMessage(channel: String, message: String) : Observable<PostMessageResponse>
     fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?) : Observable<HistoryEvents>
+    fun getBotInfo(bot: String) : Observable<BotInfoResponse>
 }

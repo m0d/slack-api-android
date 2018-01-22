@@ -1,8 +1,10 @@
 package allbegray.slack.webapi.retrofit
 
+import allbegray.slack.type.Bot
 import allbegray.slack.type.HistoryEvents
 import allbegray.slack.webapi.SlackWebApiConstants
 import allbegray.slack.webapi.retrofit.model.AuthTestResponse
+import allbegray.slack.webapi.retrofit.model.BotInfoResponse
 import allbegray.slack.webapi.retrofit.model.PostMessageResponse
 import io.reactivex.Observable
 import pl.hellsoft.slack.wrapper.model.MySlack
@@ -27,6 +29,11 @@ interface SlackService {
 
     @POST("$apiPath/${SlackWebApiConstants.AUTH_TEST}")
     fun auth(@Query("token") token: String) : Observable<AuthTestResponse>
+
+    @GET("$apiPath/${SlackWebApiConstants.BOTS_INFO}")
+    fun getBotInfo(
+            @Query("token") token: String,
+            @Query("bot") bot: String) : Observable<BotInfoResponse>
 
     @POST("$apiPath/${SlackWebApiConstants.CHAT_POST_MESSAGE}")
     fun postMessage(
