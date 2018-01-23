@@ -1,10 +1,7 @@
 package allbegray.slack.rtm;
 
 import android.util.Log;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -16,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 import allbegray.slack.BuildConfig;
 import allbegray.slack.exception.SlackException;
+import allbegray.slack.webapi.retrofit.Ping;
+import allbegray.slack.webapi.retrofit.RtmConnect;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -36,35 +35,26 @@ public class SlackRealTimeMessagingClient {
 	private List<CloseListener> closeListeners = new ArrayList<CloseListener>();
 	private List<FailureListener> failureListeners = new ArrayList<FailureListener>();
 	private boolean stop;
-	private ObjectMapper mapper;
 	private Integer pingMillis;
 
 	public SlackRealTimeMessagingClient(String webSocketUrl) {
-		this(webSocketUrl, null, null, null);
-	}
-
-	public SlackRealTimeMessagingClient(String webSocketUrl, ObjectMapper mapper) {
-		this(webSocketUrl, null, mapper, null);
+		this(webSocketUrl, null, null);
 	}
 
 	public SlackRealTimeMessagingClient(String webSocketUrl, Integer pingMillis) {
-		this(webSocketUrl, null, null, pingMillis);
+		this(webSocketUrl, null, pingMillis);
 	}
 
-	public SlackRealTimeMessagingClient(String webSocketUrl, ProxyServerInfo proxyServerInfo, ObjectMapper mapper) {
-		this(webSocketUrl, proxyServerInfo, mapper, null);
+	public SlackRealTimeMessagingClient(String webSocketUrl, ProxyServerInfo proxyServerInfo) {
+		this(webSocketUrl, proxyServerInfo, null);
 	}
 
-	public SlackRealTimeMessagingClient(String webSocketUrl, ProxyServerInfo proxyServerInfo, ObjectMapper mapper, Integer pingMillis) {
-		if (mapper == null) {
-			mapper = new ObjectMapper();
-		}
+	public SlackRealTimeMessagingClient(String webSocketUrl, ProxyServerInfo proxyServerInfo, Integer pingMillis) {
 		if (pingMillis == null) {
 			pingMillis = 3 * 1000;
 		}
 		this.webSocketUrl = webSocketUrl;
 		this.proxyServerInfo = proxyServerInfo;
-		this.mapper = mapper;
 		this.pingMillis = pingMillis;
 	}
 
@@ -80,10 +70,14 @@ public class SlackRealTimeMessagingClient {
 				return;
 
 			String type = null;
-			JsonNode node = null;
+//			JsonNode node = null;
 			try {
-				node = mapper.readTree(text);
-				type = node.findPath("type").asText();
+
+				RtmConnect connect = new Gson().fromJson(text, RtmConnect.class);
+				type = connect.getType();
+
+//				node = mapper.readTree(text);
+//				type = node.findPath("type").asText();
 			} catch (Exception e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
@@ -96,7 +90,7 @@ public class SlackRealTimeMessagingClient {
 				List<EventListener> eventListeners = listeners.get(type);
 				if (eventListeners != null && !eventListeners.isEmpty()) {
 					for (EventListener listener : eventListeners) {
-						listener.onMessage(node);
+						listener.onMessage(text);
 					}
 				}
 			}
@@ -199,10 +193,13 @@ public class SlackRealTimeMessagingClient {
 	private long socketId = 0;
 
 	private void ping() {
-		ObjectNode pingMessage = mapper.createObjectNode();
-		pingMessage.put("id", ++socketId);
-		pingMessage.put("type", "ping");
-		String pingJson = pingMessage.toString();
+		Gson gson = new Gson();
+		String pingJson = gson.toJson(new Ping(++socketId, "ping"));
+
+//		ObjectNode pingMessage = mapper.createObjectNode();
+//		pingMessage.put("id", ++socketId);
+//		pingMessage.put("type", "ping");
+//		 = pingMessage.toString();
 		if (ws != null) {
 			try {
 				ws.send(pingJson);
