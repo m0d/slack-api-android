@@ -1,6 +1,6 @@
 package pl.hellsoft.slack.wrapper.model
 
-import allbegray.slack.webapi.retrofit.model.AuthTestResponse
+import allbegray.slack.webapi.model.AuthTestResponse
 import pl.hellsoft.slack.wrapper.SlackApiEvent
 
 /**

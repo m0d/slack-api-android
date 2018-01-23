@@ -31,8 +31,6 @@ android {
 }
 
 dependencies {
-    implementation "cz.msebera.android:httpclient:4.4.1.2"
-
     compileOnly "com.google.code.gson:gson:$gson_version"
     compileOnly "com.squareup.okhttp3:okhttp:$okhttp_version"
     compileOnly "com.squareup.okhttp3:logging-interceptor:$okhttp_version"

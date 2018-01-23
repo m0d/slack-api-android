@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 import allbegray.slack.BuildConfig;
 import allbegray.slack.exception.SlackException;
-import allbegray.slack.webapi.retrofit.Ping;
-import allbegray.slack.webapi.retrofit.RtmConnect;
+import allbegray.slack.rtm.model.Ping;
+import allbegray.slack.rtm.model.RtmConnect;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

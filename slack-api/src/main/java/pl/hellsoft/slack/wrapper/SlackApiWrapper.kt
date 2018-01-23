@@ -2,9 +2,10 @@ package pl.hellsoft.slack.wrapper
 
 import allbegray.slack.BuildConfig
 import allbegray.slack.rtm.Event
+import allbegray.slack.rtm.RtmApiImpl
 import allbegray.slack.rtm.SlackRealTimeMessagingClient
-import allbegray.slack.webapi.SlackWebApiConstants
-import allbegray.slack.webapi.retrofit.*
+import allbegray.slack.rtm.WrapperRtmInterface
+import allbegray.slack.webapi.*
 import android.annotation.SuppressLint
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.w
