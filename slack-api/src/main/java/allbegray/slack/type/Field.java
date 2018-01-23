@@ -1,16 +1,11 @@
 package allbegray.slack.type;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-@JsonInclude(Include.NON_EMPTY)
 public class Field {
 
 	protected String title;
 	protected String value;
-	
-	@JsonProperty("short")
+
+	// map short to boolean
 	protected Boolean _short;
 
 	public Field() {

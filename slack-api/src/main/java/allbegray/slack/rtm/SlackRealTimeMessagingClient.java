@@ -70,14 +70,9 @@ public class SlackRealTimeMessagingClient {
 				return;
 
 			String type = null;
-//			JsonNode node = null;
 			try {
-
 				RtmConnect connect = new Gson().fromJson(text, RtmConnect.class);
 				type = connect.getType();
-
-//				node = mapper.readTree(text);
-//				type = node.findPath("type").asText();
 			} catch (Exception e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
@@ -195,11 +190,6 @@ public class SlackRealTimeMessagingClient {
 	private void ping() {
 		Gson gson = new Gson();
 		String pingJson = gson.toJson(new Ping(++socketId, "ping"));
-
-//		ObjectNode pingMessage = mapper.createObjectNode();
-//		pingMessage.put("id", ++socketId);
-//		pingMessage.put("type", "ping");
-//		 = pingMessage.toString();
 		if (ws != null) {
 			try {
 				ws.send(pingJson);

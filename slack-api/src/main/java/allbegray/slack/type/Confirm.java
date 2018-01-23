@@ -1,11 +1,5 @@
 package allbegray.slack.type;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-/**
- * Created by allbegray on 2016-10-24.
- */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Confirm {
 
     protected String title;

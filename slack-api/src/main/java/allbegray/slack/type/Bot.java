@@ -1,11 +1,5 @@
 package allbegray.slack.type;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-/**
- * Created by allbegray on 2016-06-14.
- */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Bot {
 
     protected String id;

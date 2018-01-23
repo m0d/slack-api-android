@@ -2,9 +2,6 @@ package allbegray.slack.type;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Usergroup {
 
 	protected String id;

@@ -3,19 +3,10 @@ package allbegray.slack.type;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import allbegray.slack.exception.SlackArgumentException;
 import allbegray.slack.validation.SlackFieldValidationUtils;
 
-/**
- * reference :
- * <a href="https://api.slack.com/incoming-webhooks">https://api.slack.com/
- * incoming-webhooks</a>
- *
- */
-@JsonInclude(Include.NON_EMPTY)
 public class Payload {
 
 	protected String username;

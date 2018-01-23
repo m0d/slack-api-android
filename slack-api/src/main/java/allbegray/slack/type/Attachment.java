@@ -1,19 +1,11 @@
 package allbegray.slack.type;
 
-import allbegray.slack.exception.SlackArgumentException;
-import allbegray.slack.validation.SlackFieldValidationUtils;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * reference :
- * <a href="https://api.slack.com/docs/attachments">https://api.slack.com/docs/
- * attachments</a>
- */
-@JsonInclude(Include.NON_EMPTY)
+import allbegray.slack.exception.SlackArgumentException;
+import allbegray.slack.validation.SlackFieldValidationUtils;
+
 public class Attachment {
 
     private static final String HEX_REGEX = "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
