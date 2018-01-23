@@ -17,6 +17,7 @@ data class MessageEvent(
         var channel : String? = null,
         var user : String? = null,
         var text : String? = null,
+        var username : String? = null,
         var ts : String,
         var source_team : String? = null,
         var bot_id : String? = null,
