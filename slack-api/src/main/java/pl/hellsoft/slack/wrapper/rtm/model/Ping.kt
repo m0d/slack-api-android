@@ -1,4 +1,4 @@
-package allbegray.slack.rtm.model
+package pl.hellsoft.slack.wrapper.rtm.model
 
 /**
  * @author Maciej Madetko

@@ -1,4 +1,4 @@
-package allbegray.slack.webapi.model
+package pl.hellsoft.slack.wrapper.webapi.model
 
 /**
  * @author Maciej Madetko

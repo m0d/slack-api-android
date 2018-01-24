@@ -1,9 +1,7 @@
 package pl.hellsoft.slack.wrapper.rtm
 
-import allbegray.slack.BuildConfig
-import allbegray.slack.rtm.model.Ping
-import allbegray.slack.rtm.model.RtmConnect
-import android.util.Log
+import pl.hellsoft.slack.wrapper.rtm.model.Ping
+import pl.hellsoft.slack.wrapper.rtm.model.RtmConnect
 import com.github.ajalt.timberkt.Timber.d
 import com.github.ajalt.timberkt.Timber.e
 import com.github.ajalt.timberkt.Timber.i
@@ -15,6 +13,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
+import pl.hellsoft.slack.wrapper.BuildConfig
 import pl.hellsoft.slack.wrapper.rtm.listener.CloseListener
 import pl.hellsoft.slack.wrapper.rtm.listener.EventListener
 import pl.hellsoft.slack.wrapper.rtm.listener.FailureListener

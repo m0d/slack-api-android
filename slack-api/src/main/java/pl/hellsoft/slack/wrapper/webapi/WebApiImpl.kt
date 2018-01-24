@@ -1,9 +1,9 @@
 package pl.hellsoft.slack.wrapper.webapi
 
 import pl.hellsoft.slack.wrapper.model.HistoryEvents
-import allbegray.slack.webapi.model.BotInfoResponse
-import allbegray.slack.webapi.model.MeMessageResponse
-import allbegray.slack.webapi.model.PostMessageResponse
+import pl.hellsoft.slack.wrapper.webapi.model.BotInfoResponse
+import pl.hellsoft.slack.wrapper.webapi.model.MeMessageResponse
+import pl.hellsoft.slack.wrapper.webapi.model.PostMessageResponse
 import io.reactivex.Observable
 import pl.hellsoft.slack.wrapper.SlackService
 

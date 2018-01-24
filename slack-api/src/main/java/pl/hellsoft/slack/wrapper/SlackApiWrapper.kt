@@ -1,6 +1,5 @@
 package pl.hellsoft.slack.wrapper
 
-import allbegray.slack.BuildConfig
 import android.annotation.SuppressLint
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.w
