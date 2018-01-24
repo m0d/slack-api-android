@@ -8,6 +8,7 @@ import com.github.ajalt.timberkt.Timber.d
 import com.github.ajalt.timberkt.Timber.e
 import com.github.ajalt.timberkt.Timber.i
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -41,7 +42,7 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
 
     private var client: OkHttpClient? = null
     private var ws: WebSocket? = null
-    private val gson = Gson()
+    private val gson by lazy { GsonBuilder().create() }
 
 
     private val listeners = HashMap<String, MutableList<EventListener>>()
