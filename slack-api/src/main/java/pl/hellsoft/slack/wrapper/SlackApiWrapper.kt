@@ -2,6 +2,7 @@ package pl.hellsoft.slack.wrapper
 
 import allbegray.slack.BuildConfig
 import android.annotation.SuppressLint
+import com.github.ajalt.timberkt.Timber.d
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.w
 import com.google.gson.Gson
@@ -17,6 +18,9 @@ import pl.hellsoft.slack.wrapper.model.AuthEvent
 import pl.hellsoft.slack.wrapper.model.ConnectionEvent
 import pl.hellsoft.slack.wrapper.model.MessageEvent
 import pl.hellsoft.slack.wrapper.rtm.*
+import pl.hellsoft.slack.wrapper.rtm.listener.CloseListener
+import pl.hellsoft.slack.wrapper.rtm.listener.EventListener
+import pl.hellsoft.slack.wrapper.rtm.listener.FailureListener
 import pl.hellsoft.slack.wrapper.webapi.WebApiImpl
 import pl.hellsoft.slack.wrapper.webapi.WrapperApiInterface
 import retrofit2.Retrofit
@@ -71,6 +75,7 @@ open class SlackApiWrapper {
     }
 
     open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
+        d { "wrapper init $token mConnected=$mConnected emitter=$emitter" }
         mToken = token
         apiInterface = WebApiImpl(service, mToken)
         rtmInterface = RtmApiImpl(service, mToken)
@@ -84,22 +89,25 @@ open class SlackApiWrapper {
     }
 
     private fun prepare(emitter: ObservableEmitter<SlackApiEvent>){
+        d { "prepare =$emitter" }
         var shouldConnect = true
         val disposable = rtmInterface.rtmStart()
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     response ->
+                    d { "prepare = onNext" }
                     response?.run {
                     mRtmClient = SlackRealTimeMessagingClient(response.url, proxyServerInfo = null)
                 }
                 }, {
                     error ->
+                    d { "prepare = onError" }
                     emitter.onNext(ConnectionEvent(false, error.message))
                     shouldConnect = false
                 }, {
+                    d { "prepare = onComplete" }
                     if (shouldConnect && !connect()) {
-
                         emitter.onNext(ConnectionEvent(false))
                     } else {
                         addListeners(emitter)
@@ -139,30 +147,10 @@ open class SlackApiWrapper {
 
         })
 
-//        mRtmClient?.addListener(Event.HELLO) {
-//            mConnected = true
-//            mToken?.run {
-//                val disposable = service.auth(this)
-//                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe({
-//                            response -> response?.run {
-//                            emitter.onNext(ConnectionEvent(true))
-//                            emitter.onNext(AuthEvent(response))
-//                        }
-//                        }, {
-//                            error -> emitter.onNext(ConnectionEvent(false, error.message))
-//                            mConnected = false
-//                        })
-//                compositeDisposable.add(disposable)
-//            }
-//        }
-
-
         mRtmClient?.addCloseListener(object : CloseListener {
             override fun onClose() {
                 mConnected = false
-                emitter.onNext(ConnectionEvent(false, "Conection closed"))
+                emitter.onNext(ConnectionEvent(false, "Connection closed"))
             }
         })
 
@@ -178,7 +166,7 @@ open class SlackApiWrapper {
             override fun onMessage(messageNode: String) {
                 w { "Event.MESSAGE: $messageNode" }
                 try {
-                    val messageEvent : MessageEvent? = mGson.fromJson(messageNode.toString(), MessageEvent::class.java)
+                    val messageEvent : MessageEvent? = mGson.fromJson(messageNode, MessageEvent::class.java)
                     messageEvent?.run {
                         emitter.onNext(messageEvent)
                     }

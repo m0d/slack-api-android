@@ -1,4 +1,4 @@
-package pl.hellsoft.slack.wrapper.rtm
+package pl.hellsoft.slack.wrapper.rtm.listener
 
 
 interface EventListener {

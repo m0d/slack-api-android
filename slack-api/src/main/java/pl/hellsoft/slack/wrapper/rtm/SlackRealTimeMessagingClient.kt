@@ -4,9 +4,19 @@ import allbegray.slack.BuildConfig
 import allbegray.slack.rtm.model.Ping
 import allbegray.slack.rtm.model.RtmConnect
 import android.util.Log
+import com.github.ajalt.timberkt.Timber.d
+import com.github.ajalt.timberkt.Timber.e
+import com.github.ajalt.timberkt.Timber.i
 import com.google.gson.Gson
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
+import pl.hellsoft.slack.wrapper.rtm.listener.CloseListener
+import pl.hellsoft.slack.wrapper.rtm.listener.EventListener
+import pl.hellsoft.slack.wrapper.rtm.listener.FailureListener
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.*
@@ -20,17 +30,25 @@ import java.util.concurrent.TimeUnit
  */
 class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInfo: ProxyServerInfo? = null, val pingMillis: Int = 3000) {
 
-    private val TAG = "SlackRtmClient"
+    init {
+        d { "SlackRealTimeMessagingClient init" }
+    }
+    companion object {
+        const val NORMAL_CLOSURE_STATUS = 1000
+    }
+
+    private lateinit var disposables: CompositeDisposable
 
     private var client: OkHttpClient? = null
     private var ws: WebSocket? = null
-    private val NORMAL_CLOSURE_STATUS = 1000
+    private val gson = Gson()
+
 
     private val listeners = HashMap<String, MutableList<EventListener>>()
     private val closeListeners = ArrayList<CloseListener>()
     private val failureListeners = ArrayList<FailureListener>()
 
-    private var stop: Boolean = false
+    private var socketId: Long = 0
 
     fun addListener(event: Event, listener: EventListener) {
         addListener(event.name.toLowerCase(), listener)
@@ -55,7 +73,7 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
 
     private val webSocketListener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
-            Log.i(TAG, "Connected to Slack RTM (Real Time Messaging) server : " + webSocketUrl)
+            i { "Connected to Slack RTM (Real Time Messaging) server : " + webSocketUrl }
         }
 
         override fun onMessage(webSocket: WebSocket, text: String?) {
@@ -67,11 +85,11 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
                 val connect = Gson().fromJson(text, RtmConnect::class.java)
                 type = connect.type
             } catch (e: Exception) {
-                Log.e(TAG, e.message, e)
+                e { "$e.message" }
             }
 
             if ("pong" != type) {
-                Log.i(TAG, "Slack RTM message : " + text)
+                i { "Slack RTM message : $text" }
             }
 
             if (type != null) {
@@ -85,7 +103,6 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            stop = true
             if (!closeListeners.isEmpty()) {
                 for (listener in closeListeners) {
                     listener.onClose()
@@ -97,7 +114,6 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
             if (t !is Exception)
                 return
 
-            stop = true
             if (!failureListeners.isEmpty()) {
                 for (listener in failureListeners) {
                     listener.onFailure(RuntimeException(t))
@@ -107,21 +123,24 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
     }
 
     fun close() {
-        Log.i(TAG, "Slack RTM closing...")
-        stop = true
+        i { "Slack RTM closing..." }
         try {
             client?.dispatcher()?.executorService()?.shutdown()
             client?.dispatcher()?.cancelAll()
             ws?.close(NORMAL_CLOSURE_STATUS, null)
             //ws.cancel();
         } catch (e: Exception) {
-            // websocket already closed
+            e { "web socket already closed" }
+        } finally {
+            disposables.dispose()
         }
-        Log.i(TAG, "Slack RTM closed.")
+        i { "Slack RTM closed." }
     }
 
     fun connect(): Boolean {
         try {
+            disposables = CompositeDisposable()
+
             val clientBuilder = OkHttpClient.Builder()
                     .connectTimeout(0, TimeUnit.MILLISECONDS)
                     .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -153,31 +172,24 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
         return true
     }
 
-    private var socketId: Long = 0
-
     private fun ping() {
-        val pingJson = Gson().toJson(Ping(++socketId, "ping"))
+        val pingJson = gson.toJson(Ping(++socketId, "ping"))
         try {
             ws?.send(pingJson)
-            Log.d(TAG, "ping : " + pingJson)
+            d { "ping : $pingJson" }
         } catch (e: IllegalStateException) {
-            Log.d(TAG, "websocket closed before we could write")
+            d { "web socket closed before we could write" }
             close()
         }
     }
 
     private fun await() {
-        val thread = Thread(Runnable {
-            try {
-                Thread.sleep(pingMillis.toLong())
-                while (!stop) {
-                    ping()
-                    Thread.sleep(pingMillis.toLong())
-                }
-            } catch (e: Exception) {
-                throw RuntimeException(e)
-            }
-        })
-        thread.start()
+        disposables.add(Observable.interval(pingMillis.toLong(), TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { ping() },
+                        { err -> e { "await ping error $err" } }
+                ))
     }
 }
