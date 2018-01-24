@@ -1,8 +1,6 @@
 package pl.hellsoft.slack.wrapper
 
 import allbegray.slack.BuildConfig
-import allbegray.slack.rtm.*
-import allbegray.slack.webapi.*
 import android.annotation.SuppressLint
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.w
@@ -15,10 +13,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import pl.hellsoft.slack.rtm.SlackRealTimeMessagingClient
 import pl.hellsoft.slack.wrapper.model.AuthEvent
 import pl.hellsoft.slack.wrapper.model.ConnectionEvent
 import pl.hellsoft.slack.wrapper.model.MessageEvent
+import pl.hellsoft.slack.wrapper.rtm.*
+import pl.hellsoft.slack.wrapper.webapi.WebApiImpl
+import pl.hellsoft.slack.wrapper.webapi.WrapperApiInterface
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -51,7 +51,7 @@ open class SlackApiWrapper {
                 .client(okHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .addConverterFactory(GsonConverterFactory.create(Gson()))
-                .baseUrl(SlackWebApiConstants.SLACK_WEB_API_URL + "/")
+                .baseUrl(SlackApiConstants.SLACK_WEB_API_URL + "/")
                 .build()
                 .create(SlackService::class.java)
     }
