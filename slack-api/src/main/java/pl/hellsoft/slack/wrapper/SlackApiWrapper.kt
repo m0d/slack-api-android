@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
  */
 
 open class SlackApiWrapper {
-    private lateinit var compositeDisposable: CompositeDisposable
+    private var compositeDisposable = CompositeDisposable()
     private lateinit var mToken : String
     private val timeoutInSeconds = 6L
     private var service: SlackService
@@ -176,7 +176,9 @@ open class SlackApiWrapper {
         mRtmClient?.run {
             close()
         }
-        compositeDisposable.dispose()
+        if(!compositeDisposable.isDisposed) {
+            compositeDisposable.dispose()
+        }
         callback?.invoke()
     }
 
