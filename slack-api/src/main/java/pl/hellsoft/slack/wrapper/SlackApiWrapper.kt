@@ -1,10 +1,7 @@
 package pl.hellsoft.slack.wrapper
 
 import allbegray.slack.BuildConfig
-import allbegray.slack.rtm.Event
-import allbegray.slack.rtm.RtmApiImpl
-import allbegray.slack.rtm.SlackRealTimeMessagingClient
-import allbegray.slack.rtm.WrapperRtmInterface
+import allbegray.slack.rtm.*
 import allbegray.slack.webapi.*
 import android.annotation.SuppressLint
 import com.github.ajalt.timberkt.e
@@ -18,6 +15,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import pl.hellsoft.slack.rtm.SlackRealTimeMessagingClient
 import pl.hellsoft.slack.wrapper.model.AuthEvent
 import pl.hellsoft.slack.wrapper.model.ConnectionEvent
 import pl.hellsoft.slack.wrapper.model.MessageEvent
@@ -93,7 +91,7 @@ open class SlackApiWrapper {
                 .subscribe({
                     response ->
                     response?.run {
-                    mRtmClient = SlackRealTimeMessagingClient(response.url)
+                    mRtmClient = SlackRealTimeMessagingClient(response.url, proxyServerInfo = null)
                 }
                 }, {
                     error ->
@@ -117,7 +115,10 @@ open class SlackApiWrapper {
     }
 
     private fun addListeners(emitter: ObservableEmitter<SlackApiEvent>) {
-        mRtmClient?.addListener(Event.HELLO) {
+
+        mRtmClient?.addListener(Event.HELLO, object : EventListener {
+            override fun onMessage(message: String) {
+
             mConnected = true
             mToken?.run {
                 val disposable = service.auth(this)
@@ -134,29 +135,60 @@ open class SlackApiWrapper {
                         })
                 compositeDisposable.add(disposable)
             }
-        }
-
-        mRtmClient?.addCloseListener {
-            mConnected = false
-            emitter.onNext(ConnectionEvent(false, "Conection closed"))
-        }
-
-        mRtmClient?.addFailureListener { throwable ->
-            mConnected = false
-            emitter.onNext(ConnectionEvent(false, throwable.message))
-        }
-
-        mRtmClient?.addListener(Event.MESSAGE) { messageNode ->
-            w { "Event.MESSAGE: $messageNode" }
-            try {
-                val messageEvent : MessageEvent? = mGson.fromJson(messageNode.toString(), MessageEvent::class.java)
-                messageEvent?.run {
-                    emitter.onNext(messageEvent)
-                }
-            }catch (err: Exception){
-                e{err.localizedMessage}
             }
-        }
+
+        })
+
+//        mRtmClient?.addListener(Event.HELLO) {
+//            mConnected = true
+//            mToken?.run {
+//                val disposable = service.auth(this)
+//                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe({
+//                            response -> response?.run {
+//                            emitter.onNext(ConnectionEvent(true))
+//                            emitter.onNext(AuthEvent(response))
+//                        }
+//                        }, {
+//                            error -> emitter.onNext(ConnectionEvent(false, error.message))
+//                            mConnected = false
+//                        })
+//                compositeDisposable.add(disposable)
+//            }
+//        }
+
+
+        mRtmClient?.addCloseListener(object : CloseListener {
+            override fun onClose() {
+                mConnected = false
+                emitter.onNext(ConnectionEvent(false, "Conection closed"))
+            }
+        })
+
+        mRtmClient?.addFailureListener(object : FailureListener {
+            override fun onFailure(throwable: Throwable) {
+                mConnected = false
+                emitter.onNext(ConnectionEvent(false, throwable.message))
+            }
+
+        })
+
+        mRtmClient?.addListener(Event.MESSAGE, object : EventListener {
+            override fun onMessage(messageNode: String) {
+                w { "Event.MESSAGE: $messageNode" }
+                try {
+                    val messageEvent : MessageEvent? = mGson.fromJson(messageNode.toString(), MessageEvent::class.java)
+                    messageEvent?.run {
+                        emitter.onNext(messageEvent)
+                    }
+                }catch (err: Exception){
+                    e{err.localizedMessage}
+                }
+            }
+
+        })
+
     }
 
     @SuppressLint("CheckResult")

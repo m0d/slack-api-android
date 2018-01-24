@@ -1,6 +1,6 @@
 package allbegray.slack.webapi.model
 
-import allbegray.slack.type.Bot
+import pl.hellsoft.slack.wrapper.model.Bot
 
 /**
  * @author Maciej Madetko

@@ -12,6 +12,6 @@ import pl.hellsoft.slack.wrapper.model.MySlack
  */
 class RtmApiImpl(private val service: SlackService, private val token: String) : WrapperRtmInterface {
     override fun rtmStart(): Observable<MySlack> {
-        return return service.rtmStart(token)
+        return service.rtmStart(token)
     }
 }
