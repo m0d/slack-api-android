@@ -2,7 +2,6 @@ package pl.hellsoft.slack.wrapper
 
 import allbegray.slack.BuildConfig
 import android.annotation.SuppressLint
-import com.github.ajalt.timberkt.Timber.d
 import com.github.ajalt.timberkt.e
 import com.github.ajalt.timberkt.w
 import com.google.gson.Gson
@@ -36,7 +35,7 @@ import java.util.concurrent.TimeUnit
  */
 
 open class SlackApiWrapper {
-    private var compositeDisposable = CompositeDisposable()
+    private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var mToken : String
     private val timeoutInSeconds = 6L
     private var service: SlackService
@@ -75,7 +74,7 @@ open class SlackApiWrapper {
     }
 
     open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
-        d { "wrapper init $token mConnected=$mConnected emitter=$emitter" }
+        compositeDisposable = CompositeDisposable()
         mToken = token
         apiInterface = WebApiImpl(service, mToken)
         rtmInterface = RtmApiImpl(service, mToken)
@@ -89,24 +88,20 @@ open class SlackApiWrapper {
     }
 
     private fun prepare(emitter: ObservableEmitter<SlackApiEvent>){
-        d { "prepare =$emitter" }
         var shouldConnect = true
         val disposable = rtmInterface.rtmStart()
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     response ->
-                    d { "prepare = onNext" }
                     response?.run {
                     mRtmClient = SlackRealTimeMessagingClient(response.url, proxyServerInfo = null)
                 }
                 }, {
                     error ->
-                    d { "prepare = onError" }
                     emitter.onNext(ConnectionEvent(false, error.message))
                     shouldConnect = false
                 }, {
-                    d { "prepare = onComplete" }
                     if (shouldConnect && !connect()) {
                         emitter.onNext(ConnectionEvent(false))
                     } else {
@@ -128,21 +123,19 @@ open class SlackApiWrapper {
             override fun onMessage(message: String) {
 
             mConnected = true
-            mToken?.run {
-                val disposable = service.auth(this)
-                        .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            response -> response?.run {
-                            emitter.onNext(ConnectionEvent(true))
-                            emitter.onNext(AuthEvent(response))
-                        }
-                        }, {
-                            error -> emitter.onNext(ConnectionEvent(false, error.message))
-                            mConnected = false
-                        })
-                compositeDisposable.add(disposable)
-            }
+                mToken.run {
+                    val disposable = service.auth(this)
+                            .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({ response -> response?.run {
+                                emitter.onNext(ConnectionEvent(true))
+                                emitter.onNext(AuthEvent(response))
+                            }
+                            }, { error -> emitter.onNext(ConnectionEvent(false, error.message))
+                                mConnected = false
+                            })
+                    compositeDisposable.add(disposable)
+                }
             }
 
         })
@@ -155,18 +148,18 @@ open class SlackApiWrapper {
         })
 
         mRtmClient?.addFailureListener(object : FailureListener {
-            override fun onFailure(throwable: Throwable) {
+            override fun onFailure(t: Throwable) {
                 mConnected = false
-                emitter.onNext(ConnectionEvent(false, throwable.message))
+                emitter.onNext(ConnectionEvent(false, t.message))
             }
 
         })
 
         mRtmClient?.addListener(Event.MESSAGE, object : EventListener {
-            override fun onMessage(messageNode: String) {
-                w { "Event.MESSAGE: $messageNode" }
+            override fun onMessage(message: String) {
+                w { "Event.MESSAGE: $message" }
                 try {
-                    val messageEvent : MessageEvent? = mGson.fromJson(messageNode, MessageEvent::class.java)
+                    val messageEvent : MessageEvent? = mGson.fromJson(message, MessageEvent::class.java)
                     messageEvent?.run {
                         emitter.onNext(messageEvent)
                     }
