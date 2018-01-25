@@ -90,10 +90,8 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
                 i { "Slack RTM message : $text" }
             }
 
-            if (type != null) {
-                listeners[type]?.forEach {
-                    it.onMessage(text)
-                }
+            listeners[type]?.forEach {
+                it.onMessage(text)
             }
         }
 
