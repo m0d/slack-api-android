@@ -43,8 +43,8 @@ open class SlackApiWrapper {
     private var mConnected: Boolean = false
     private val mGson by lazy { GsonBuilder().create() }
 
-    private lateinit var mApiInterface: WrapperApiInterface
-    private lateinit var mRtmInterface: WrapperRtmInterface
+    private var mApiInterface: WrapperApiInterface? = null
+    private var mRtmInterface: WrapperRtmInterface? = null
 
     init {
         val okHttpClient = prepareOkHttpBuilder().build()
@@ -88,26 +88,28 @@ open class SlackApiWrapper {
 
     private fun prepare(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
-        val disposable = mRtmInterface.rtmStart()
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    response ->
-                    response?.run {
-                    mRtmClient = SlackRealTimeMessagingClient(response.url, proxyServerInfo = null)
-                }
-                }, {
-                    error ->
-                    emitter.onNext(ConnectionEvent(false, error.message))
-                    shouldConnect = false
-                }, {
-                    if (shouldConnect && !connect()) {
-                        emitter.onNext(ConnectionEvent(false))
-                    } else {
-                        addListeners(emitter)
-                    }
-                })
-        mCompositeDisposable.add(disposable)
+        mRtmInterface?.run {
+            val disposable = rtmStart()
+                    .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        response ->
+                        response?.run {
+                            mRtmClient = SlackRealTimeMessagingClient(response.url, proxyServerInfo = null)
+                        }
+                    }, {
+                        error ->
+                        emitter.onNext(ConnectionEvent(false, error.message))
+                        shouldConnect = false
+                    }, {
+                        if (shouldConnect && !connect()) {
+                            emitter.onNext(ConnectionEvent(false))
+                        } else {
+                            addListeners(emitter)
+                        }
+                    })
+            mCompositeDisposable.add(disposable)
+        }
     }
 
     private fun connect(): Boolean = try {
@@ -182,11 +184,11 @@ open class SlackApiWrapper {
         callback?.invoke()
     }
 
-    open fun getWebApiInterface() : WrapperApiInterface {
+    open fun getWebApiInterface() : WrapperApiInterface? {
         return mApiInterface
     }
 
-    open fun getRtminterface() : WrapperRtmInterface {
+    open fun getRtminterface() : WrapperRtmInterface? {
         return mRtmInterface
     }
 }
