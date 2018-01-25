@@ -31,16 +31,15 @@ android {
 }
 
 dependencies {
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.0"
-    implementation "cz.msebera.android:httpclient:4.4.1.2"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.0"
-
     compileOnly "com.google.code.gson:gson:$gson_version"
     compileOnly "com.squareup.okhttp3:okhttp:$okhttp_version"
     compileOnly "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
     compileOnly "io.reactivex.rxjava2:rxandroid:$rxandroid2_version"
     compileOnly "io.reactivex.rxjava2:rxjava:$rxjava2_version"
     compileOnly "com.github.ajalt:timberkt:$timberkt_version"
+    compileOnly "com.squareup.retrofit2:adapter-rxjava2:$retrofit2_version"
+    compileOnly "com.squareup.retrofit2:retrofit:$retrofit2_version"
+    compileOnly "com.squareup.retrofit2:converter-gson:$retrofit2_version"
 
     testImplementation 'junit:junit:4.12'
 }
