@@ -1,6 +1,6 @@
 package pl.hellsoft.slack.wrapper
 
-import pl.hellsoft.slack.wrapper.model.HistoryEventsResponse
+import pl.hellsoft.slack.wrapper.model.HistoryResponse
 import pl.hellsoft.slack.wrapper.webapi.model.AuthTestResponse
 import pl.hellsoft.slack.wrapper.webapi.model.BotInfoResponse
 import pl.hellsoft.slack.wrapper.webapi.model.MeMessageResponse
@@ -55,6 +55,6 @@ interface SlackService {
             @Query("oldest") oldest: String?,
             @Query("inclusive") inclusive: Boolean?,
             @Query("count") count: Int,
-            @Query("unreads") unreads: Boolean?) : Observable<HistoryEventsResponse>
+            @Query("unreads") unreads: Boolean?) : Observable<HistoryResponse>
 
 }

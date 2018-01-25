@@ -1,6 +1,6 @@
 package pl.hellsoft.slack.wrapper.webapi
 
-import pl.hellsoft.slack.wrapper.model.HistoryEventsResponse
+import pl.hellsoft.slack.wrapper.model.HistoryResponse
 import pl.hellsoft.slack.wrapper.webapi.model.BotInfoResponse
 import pl.hellsoft.slack.wrapper.webapi.model.MeMessageResponse
 import pl.hellsoft.slack.wrapper.webapi.model.PostMessageResponse
@@ -22,7 +22,7 @@ class WebApiImpl(private val service: SlackService, private val token: String) :
         return service.meMessage(token, channel, message)
     }
 
-    override fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?): Observable<HistoryEventsResponse> {
+    override fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?): Observable<HistoryResponse> {
         return service.getChannelHistory(token, channel, latest, oldest, inclusive, count, unreads)
     }
 
