@@ -34,17 +34,17 @@ import java.util.concurrent.TimeUnit
  */
 
 open class SlackApiWrapper {
-    private var compositeDisposable = CompositeDisposable()
+    private var mCompositeDisposable = CompositeDisposable()
     private lateinit var mToken : String
-    private val timeoutInSeconds = 6L
+    private val mTimeoutInSeconds = 6L
     private var service: SlackService
 
     private var mRtmClient: SlackRealTimeMessagingClient? = null
     private var mConnected: Boolean = false
     private val mGson by lazy { GsonBuilder().create() }
 
-    private lateinit var apiInterface: WrapperApiInterface
-    private lateinit var rtmInterface: WrapperRtmInterface
+    private lateinit var mApiInterface: WrapperApiInterface
+    private lateinit var mRtmInterface: WrapperRtmInterface
 
     init {
         val okHttpClient = prepareOkHttpBuilder().build()
@@ -60,9 +60,9 @@ open class SlackApiWrapper {
 
     private fun prepareOkHttpBuilder() : OkHttpClient.Builder {
         val builder = OkHttpClient.Builder()
-                .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
-                .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
-                .readTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .connectTimeout(mTimeoutInSeconds, TimeUnit.SECONDS)
+                .writeTimeout(mTimeoutInSeconds, TimeUnit.SECONDS)
+                .readTimeout(mTimeoutInSeconds, TimeUnit.SECONDS)
 
         if (BuildConfig.DEBUG) {
             val interceptor = HttpLoggingInterceptor()
@@ -73,10 +73,10 @@ open class SlackApiWrapper {
     }
 
     open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
-        compositeDisposable = CompositeDisposable()
+        mCompositeDisposable = CompositeDisposable()
         mToken = token
-        apiInterface = WebApiImpl(service, mToken)
-        rtmInterface = RtmApiImpl(service, mToken)
+        mApiInterface = WebApiImpl(service, mToken)
+        mRtmInterface = RtmApiImpl(service, mToken)
         if(mConnected){
             disconnect{
                 prepare(emitter)
@@ -88,7 +88,7 @@ open class SlackApiWrapper {
 
     private fun prepare(emitter: ObservableEmitter<SlackApiEvent>){
         var shouldConnect = true
-        val disposable = rtmInterface.rtmStart()
+        val disposable = mRtmInterface.rtmStart()
                 .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -107,7 +107,7 @@ open class SlackApiWrapper {
                         addListeners(emitter)
                     }
                 })
-        compositeDisposable.add(disposable)
+        mCompositeDisposable.add(disposable)
     }
 
     private fun connect(): Boolean = try {
@@ -133,7 +133,7 @@ open class SlackApiWrapper {
                             }, { error -> emitter.onNext(ConnectionEvent(false, error.message))
                                 mConnected = false
                             })
-                    compositeDisposable.add(disposable)
+                    mCompositeDisposable.add(disposable)
                 }
             }
 
@@ -176,17 +176,17 @@ open class SlackApiWrapper {
         mRtmClient?.run {
             close()
         }
-        if(!compositeDisposable.isDisposed) {
-            compositeDisposable.dispose()
+        if(!mCompositeDisposable.isDisposed) {
+            mCompositeDisposable.dispose()
         }
         callback?.invoke()
     }
 
-    fun getWebApiInterface() : WrapperApiInterface {
-        return apiInterface
+    open fun getWebApiInterface() : WrapperApiInterface {
+        return mApiInterface
     }
 
-    fun getRtminterface() : WrapperRtmInterface {
-        return rtmInterface
+    open fun getRtminterface() : WrapperRtmInterface {
+        return mRtmInterface
     }
 }

@@ -12,8 +12,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
-import pl.hellsoft.slack.wrapper.BuildConfig
 import pl.hellsoft.slack.wrapper.rtm.listener.CloseListener
 import pl.hellsoft.slack.wrapper.rtm.listener.EventListener
 import pl.hellsoft.slack.wrapper.rtm.listener.FailureListener
@@ -82,7 +80,7 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
 
             var type: String? = null
             try {
-                val connect = Gson().fromJson(text, RtmConnect::class.java)
+                val connect = gson.fromJson(text, RtmConnect::class.java)
                 type = connect.type
             } catch (e: Exception) {
                 e { "$e.message" }
@@ -93,20 +91,15 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
             }
 
             if (type != null) {
-                val eventListeners = listeners[type]
-                if (eventListeners != null && !eventListeners.isEmpty()) {
-                    for (listener in eventListeners) {
-                        listener.onMessage(text)
-                    }
+                listeners[type]?.forEach {
+                    it.onMessage(text)
                 }
             }
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            if (!closeListeners.isEmpty()) {
-                for (listener in closeListeners) {
-                    listener.onClose()
-                }
+            closeListeners.forEach{
+                it.onClose()
             }
         }
 
@@ -114,10 +107,8 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
             if (t !is Exception)
                 return
 
-            if (!failureListeners.isEmpty()) {
-                for (listener in failureListeners) {
-                    listener.onFailure(RuntimeException(t))
-                }
+            failureListeners.forEach {
+                it.onFailure(RuntimeException(t))
             }
         }
     }
@@ -125,8 +116,10 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
     fun close() {
         i { "Slack RTM closing..." }
         try {
-            client?.dispatcher()?.executorService()?.shutdown()
-            client?.dispatcher()?.cancelAll()
+            client?.dispatcher()?.run{
+                executorService()?.shutdown()
+                cancelAll()
+            }
             ws?.close(NORMAL_CLOSURE_STATUS, null)
             //ws.cancel();
         } catch (e: Exception) {
@@ -152,11 +145,6 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
             }
 
             val request = Request.Builder().url(webSocketUrl).build()
-            if (BuildConfig.DEBUG) {
-                val interceptor = HttpLoggingInterceptor()
-                interceptor.level = HttpLoggingInterceptor.Level.BODY
-                clientBuilder.addInterceptor(interceptor)
-            }
             client = clientBuilder.build()
 
             ws = client?.newWebSocket(request, webSocketListener)

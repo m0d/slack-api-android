@@ -1,6 +1,6 @@
 package pl.hellsoft.slack.wrapper.webapi
 
-import pl.hellsoft.slack.wrapper.model.HistoryEvents
+import pl.hellsoft.slack.wrapper.model.HistoryEventsResponse
 import pl.hellsoft.slack.wrapper.webapi.model.BotInfoResponse
 import pl.hellsoft.slack.wrapper.webapi.model.MeMessageResponse
 import pl.hellsoft.slack.wrapper.webapi.model.PostMessageResponse
@@ -15,6 +15,6 @@ import io.reactivex.Observable
 interface WrapperApiInterface {
     fun postMessage(channel: String, message: String) : Observable<PostMessageResponse>
     fun meMessage(channel: String, message: String) : Observable<MeMessageResponse>
-    fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?) : Observable<HistoryEvents>
+    fun getChannelHistoryEvents(channel: String, latest: String?, oldest: String?, inclusive: Boolean?, count: Int, unreads: Boolean?) : Observable<HistoryEventsResponse>
     fun getBotInfo(bot: String) : Observable<BotInfoResponse>
 }

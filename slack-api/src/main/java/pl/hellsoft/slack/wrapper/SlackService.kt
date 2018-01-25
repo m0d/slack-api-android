@@ -1,6 +1,6 @@
 package pl.hellsoft.slack.wrapper
 
-import pl.hellsoft.slack.wrapper.model.HistoryEvents
+import pl.hellsoft.slack.wrapper.model.HistoryEventsResponse
 import pl.hellsoft.slack.wrapper.webapi.model.AuthTestResponse
 import pl.hellsoft.slack.wrapper.webapi.model.BotInfoResponse
 import pl.hellsoft.slack.wrapper.webapi.model.MeMessageResponse
@@ -48,13 +48,13 @@ interface SlackService {
             @Query("text") message: String) : Observable<MeMessageResponse>
 
     @GET("${apiPath}/${SlackApiConstants.CHANNELS_HISTORY}")
-    fun getChannelHistoryEvents(
+    fun getChannelHistory(
             @Query("token") token: String,
             @Query("channel") channel: String,
             @Query("latest") latest: String?,
             @Query("oldest") oldest: String?,
             @Query("inclusive") inclusive: Boolean?,
             @Query("count") count: Int,
-            @Query("unreads") unreads: Boolean?) : Observable<HistoryEvents>
+            @Query("unreads") unreads: Boolean?) : Observable<HistoryEventsResponse>
 
 }
