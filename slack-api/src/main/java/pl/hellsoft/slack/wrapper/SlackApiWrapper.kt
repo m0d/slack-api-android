@@ -64,11 +64,10 @@ open class SlackApiWrapper {
                 .writeTimeout(mTimeoutInSeconds, TimeUnit.SECONDS)
                 .readTimeout(mTimeoutInSeconds, TimeUnit.SECONDS)
 
-        if (BuildConfig.DEBUG) {
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BODY
-            builder.addInterceptor(interceptor)
-        }
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        builder.addInterceptor(interceptor)
+
         return builder
     }
 
