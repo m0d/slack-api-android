@@ -16,5 +16,7 @@ data class MessageAttachment(
         val mrkdwn_in: List<String>? = null,
         val fallback: String? = null,
         val pretext: String? = null,
-        val image_url: String? = null
+        val image_url: String? = null,
+        val callback_id: String? = null,
+        val actions : List<Action>? = null
 )
