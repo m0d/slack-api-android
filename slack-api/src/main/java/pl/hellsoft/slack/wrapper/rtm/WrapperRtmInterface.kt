@@ -2,7 +2,6 @@ package pl.hellsoft.slack.wrapper.rtm
 
 import io.reactivex.Observable
 import pl.hellsoft.slack.wrapper.model.MySlack
-import pl.hellsoft.slack.wrapper.webapi.model.AuthTestResponse
 
 /**
  * @author Maciej Madetko
@@ -12,5 +11,4 @@ import pl.hellsoft.slack.wrapper.webapi.model.AuthTestResponse
  */
 interface WrapperRtmInterface {
     fun rtmStart() : Observable<MySlack>
-    fun authTest() : Observable<AuthTestResponse>
 }

@@ -21,6 +21,7 @@ import pl.hellsoft.slack.wrapper.rtm.listener.EventListener
 import pl.hellsoft.slack.wrapper.rtm.listener.FailureListener
 import pl.hellsoft.slack.wrapper.webapi.WebApiImpl
 import pl.hellsoft.slack.wrapper.webapi.WrapperApiInterface
+import pl.hellsoft.slack.wrapper.webapi.model.AuthTestResponse
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -36,7 +37,6 @@ import java.util.concurrent.TimeUnit
 open class SlackApiWrapper {
     private var mCompositeDisposable = CompositeDisposable()
     private lateinit var mToken : String
-    private var mSlackUserId: String? = null
     private val mTimeoutInSeconds = 6L
     private var service: SlackService
 
@@ -95,7 +95,6 @@ open class SlackApiWrapper {
                     .subscribe({
                         response ->
                         response?.run {
-                            mSlackUserId = self?.id
                             mRtmClient = SlackRealTimeMessagingClient(response.url, proxyServerInfo = null)
                         }
                     }, {
@@ -193,5 +192,7 @@ open class SlackApiWrapper {
         return mRtmInterface
     }
 
-    fun getSlackUserUd() : String? = mSlackUserId
+    fun authTest(token: String): Observable<AuthTestResponse> {
+        return service.auth(token)
+    }
 }
