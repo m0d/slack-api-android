@@ -192,7 +192,7 @@ open class SlackApiWrapper {
         return mRtmInterface
     }
 
-    fun authTest(token: String): Observable<AuthTestResponse> {
+    open fun authTest(token: String): Observable<AuthTestResponse> {
         return service.auth(token)
     }
 }
