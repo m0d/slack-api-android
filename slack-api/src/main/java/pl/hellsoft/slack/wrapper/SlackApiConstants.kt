@@ -29,6 +29,9 @@ class SlackApiConstants {
         //IM
         const val IM_HISTORY = "im.history"
 
+        //Groups
+        const val GROUPS_HISTORY = "groups.history"
+
         //Users
         const val USERS_INFO = "users.info"
 

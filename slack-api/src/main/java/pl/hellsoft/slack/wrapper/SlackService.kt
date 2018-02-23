@@ -75,4 +75,14 @@ interface SlackService {
             @Query("token") token: String,
             @Query("user") user: String) : Observable<UsersInfoResponse>
 
+    @GET("$apiPath/${SlackApiConstants.GROUPS_HISTORY}")
+    fun getGroupsHistory(
+            @Query("token") token: String,
+            @Query("channel") channel: String,
+            @Query("latest") latest: String?,
+            @Query("oldest") oldest: String?,
+            @Query("inclusive") inclusive: Boolean?,
+            @Query("count") count: Int,
+            @Query("unreads") unreads: Boolean?) : Observable<HistoryResponse>
+
 }
