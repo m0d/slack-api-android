@@ -21,6 +21,7 @@ import pl.hellsoft.slack.wrapper.rtm.listener.EventListener
 import pl.hellsoft.slack.wrapper.rtm.listener.FailureListener
 import pl.hellsoft.slack.wrapper.webapi.WebApiImpl
 import pl.hellsoft.slack.wrapper.webapi.WrapperApiInterface
+import pl.hellsoft.slack.wrapper.webapi.model.AuthTestResponse
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -189,5 +190,9 @@ open class SlackApiWrapper {
 
     open fun getRtminterface() : WrapperRtmInterface? {
         return mRtmInterface
+    }
+
+    open fun authTest(token: String): Observable<AuthTestResponse> {
+        return service.auth(token)
     }
 }
