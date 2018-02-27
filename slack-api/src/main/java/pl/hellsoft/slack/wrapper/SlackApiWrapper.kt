@@ -173,7 +173,7 @@ open class SlackApiWrapper {
     }
 
     @SuppressLint("CheckResult")
-    fun disconnect(callback: (() -> Unit)? = null) {
+    open fun disconnect(callback: (() -> Unit)? = null) {
         mRtmClient?.run {
             close()
         }
