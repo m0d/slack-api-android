@@ -75,8 +75,8 @@ open class SlackApiWrapper {
     open fun isInitialized(): Boolean =  ::mToken.isInitialized
 
     open fun setDependencies(token : String){
-        mApiInterface = WebApiImpl(service, mToken)
-        mRtmInterface = RtmApiImpl(service, mToken)
+        mApiInterface = WebApiImpl(service, token)
+        mRtmInterface = RtmApiImpl(service, token)
     }
 
     open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
