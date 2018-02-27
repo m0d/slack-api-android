@@ -74,11 +74,18 @@ open class SlackApiWrapper {
 
     open fun isInitialized(): Boolean =  ::mToken.isInitialized
 
-    open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
+    open fun setDependencies(token : String){
         mCompositeDisposable = CompositeDisposable()
         mToken = token
         mApiInterface = WebApiImpl(service, mToken)
         mRtmInterface = RtmApiImpl(service, mToken)
+    }
+
+    open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
+        if(!isInitialized() || mToken != token) {
+            setDependencies(token)
+        }
+
         if(mConnected){
             disconnect{
                 prepare(emitter)
