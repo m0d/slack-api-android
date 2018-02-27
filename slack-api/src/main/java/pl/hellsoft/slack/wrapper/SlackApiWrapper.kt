@@ -72,6 +72,8 @@ open class SlackApiWrapper {
         return builder
     }
 
+    open fun isInitialized(): Boolean =  ::mToken.isInitialized
+
     open fun init(token : String): Observable<SlackApiEvent> = Observable.create { emitter ->
         mCompositeDisposable = CompositeDisposable()
         mToken = token
@@ -95,7 +97,7 @@ open class SlackApiWrapper {
                     .subscribe({
                         response ->
                         response?.run {
-                            mRtmClient = SlackRealTimeMessagingClient(response.url, proxyServerInfo = null)
+                            mRtmClient = SlackRealTimeMessagingClient(url ?: "", proxyServerInfo = null)
                         }
                     }, {
                         error ->
@@ -123,7 +125,7 @@ open class SlackApiWrapper {
         mRtmClient?.addListener(Event.HELLO, object : EventListener {
             override fun onMessage(message: String) {
 
-            mConnected = true
+                mConnected = true
                 mToken.run {
                     val disposable = service.auth(this)
                             .subscribeOn(io.reactivex.schedulers.Schedulers.io())
@@ -195,4 +197,5 @@ open class SlackApiWrapper {
     open fun authTest(token: String): Observable<AuthTestResponse> {
         return service.auth(token)
     }
+
 }

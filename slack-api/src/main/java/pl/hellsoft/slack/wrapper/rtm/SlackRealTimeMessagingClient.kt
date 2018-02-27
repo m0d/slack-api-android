@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
  * Nikkei FT Learning Limited
  * @since 23/01/2018.
  */
-class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInfo: ProxyServerInfo? = null, val pingMillis: Int = 3000) {
+class SlackRealTimeMessagingClient(val webSocketUrl: String, val proxyServerInfo: ProxyServerInfo? = null, val pingMillis: Int = 3000) {
 
     init {
         d { "SlackRealTimeMessagingClient init" }
@@ -141,6 +141,7 @@ class SlackRealTimeMessagingClient(val webSocketUrl: String?, val proxyServerInf
                 val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyServerInfo.host, proxyServerInfo.port))
                 clientBuilder.proxy(proxy)
             }
+
 
             val request = Request.Builder().url(webSocketUrl).build()
             client = clientBuilder.build()

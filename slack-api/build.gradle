@@ -30,6 +30,8 @@ android {
     }
 }
 
+//./gradlew -q dependencies sample:dependencies --configuration debugCompileClasspath
+
 dependencies {
     compileOnly "com.google.code.gson:gson:$gson_version"
     compileOnly "com.squareup.okhttp3:okhttp:$okhttp_version"
