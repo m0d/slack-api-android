@@ -163,6 +163,7 @@ open class SlackApiWrapper {
             override fun onFailure(t: Throwable) {
                 mConnected = false
                 emitter.onNext(ConnectionEvent(false, t.message))
+                disconnect()
             }
 
         })
