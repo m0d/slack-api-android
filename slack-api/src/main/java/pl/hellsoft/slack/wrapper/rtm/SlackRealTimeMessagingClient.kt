@@ -1,11 +1,8 @@
 package pl.hellsoft.slack.wrapper.rtm
 
-import pl.hellsoft.slack.wrapper.rtm.model.Ping
-import pl.hellsoft.slack.wrapper.rtm.model.RtmConnect
 import com.github.ajalt.timberkt.Timber.d
 import com.github.ajalt.timberkt.Timber.e
 import com.github.ajalt.timberkt.Timber.i
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -15,6 +12,8 @@ import okhttp3.*
 import pl.hellsoft.slack.wrapper.rtm.listener.CloseListener
 import pl.hellsoft.slack.wrapper.rtm.listener.EventListener
 import pl.hellsoft.slack.wrapper.rtm.listener.FailureListener
+import pl.hellsoft.slack.wrapper.rtm.model.Ping
+import pl.hellsoft.slack.wrapper.rtm.model.RtmConnect
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.*
