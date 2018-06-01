@@ -27,6 +27,7 @@
 }
 
 -keep class pl.hellsoft.slack.wrapper.model.** { *; }
+-keep class pl.hellsoft.slack.wrapper.rtm.model.** { *; }
 
 -dontnote com.google.gson.**
 

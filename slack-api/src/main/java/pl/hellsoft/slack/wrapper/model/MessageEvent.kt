@@ -33,9 +33,9 @@ data class MessageEvent(
         var event_ts : String? = null,
         var attachments: List<MessageAttachment>? = emptyList()
 ) : SlackApiEvent {
-    fun getTimestamp() : Long =  Math.floor(ts.toDouble()).toLong() * 1000
-    fun getDeletedTimestamp() : Long =  Math.floor((deleted_ts ?: "0" ).toDouble()).toLong() * 1000
-    fun getEventTimestamp() : Long =  Math.floor((event_ts ?: "0" ).toDouble()).toLong() * 1000
+    fun getTimestamp() : Long =  ts.replace(".000","").toLong()
+    fun getDeletedTimestamp() : Long = deleted_ts?.replace(".000","")?.toLong() ?: 0
+    fun getEventTimestamp() : Long =  event_ts?.replace(".000","")?.toLong() ?: 0
 }
 
 
