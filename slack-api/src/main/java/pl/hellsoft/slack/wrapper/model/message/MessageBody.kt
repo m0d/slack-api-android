@@ -8,7 +8,7 @@ package pl.hellsoft.slack.wrapper.model.message
  */
 
 data class MessageBody(
-        var text: String?,
+        val text: CharSequence?,
         val user: String?,
         val bot_id: String?,
         val type: String?,
