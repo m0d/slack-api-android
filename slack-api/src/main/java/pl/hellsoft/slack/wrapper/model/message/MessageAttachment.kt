@@ -20,5 +20,6 @@ data class MessageAttachment(
         val callback_id: String? = null,
         val author_name: String? = null,
         val author_link: String? = null,
-        val actions : List<Action>? = null
+        val actions : List<Action>? = null,
+        val footer: Int? = null
 )
