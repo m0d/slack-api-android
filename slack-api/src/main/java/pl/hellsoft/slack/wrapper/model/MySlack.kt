@@ -29,7 +29,8 @@ data class MySlack(
 		@SerializedName("url") val url: String?,
 		@SerializedName("dead_pig") val deadPig: Boolean?,
 		@SerializedName("warning") val warning: String?,
-		@SerializedName("response_metadata") val responseMetadata: ResponseMetadata?
+		@SerializedName("response_metadata") val responseMetadata: ResponseMetadata?,
+		@SerializedName("error") val error: String?
 )
 
 data class User(
