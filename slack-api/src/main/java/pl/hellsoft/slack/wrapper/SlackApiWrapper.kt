@@ -117,11 +117,18 @@ open class SlackApiWrapper {
             val disposable = rtmStart()
                     .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        response ->
-                        response?.run {
-                            mRtmClient = SlackRealTimeMessagingClient(url ?: "", proxyServerInfo = null)
-                        }
+                    .subscribe({ response ->
+                        with(response) {
+                            if (ok == true) {
+                                run {
+                                    mRtmClient = SlackRealTimeMessagingClient(url
+                                            ?: "", proxyServerInfo = null)
+                                }
+                            }
+                            else {
+                                emitter.onNext(ConnectionEvent(false, error))
+                            }
+                    }
                     }, {
                         error ->
                         emitter.onNext(ConnectionEvent(false, error.message))
