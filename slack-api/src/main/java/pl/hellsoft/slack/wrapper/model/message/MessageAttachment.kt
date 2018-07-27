@@ -21,5 +21,5 @@ data class MessageAttachment(
         val author_name: String? = null,
         val author_link: String? = null,
         val actions : List<Action>? = null,
-        val footer: Int? = null
+        val footer: String? = null
 )

@@ -4,4 +4,5 @@ data class HistoryResponse(
         var ok : Boolean,
         var latest: String? = null,
         var messages: List<MessageEvent>,
-        var has_more: Boolean = false)
+        var has_more: Boolean = false,
+        var error: String? = null)
