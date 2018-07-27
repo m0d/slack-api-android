@@ -37,6 +37,3 @@ data class MessageEvent(
     fun getDeletedTimestamp() : Long = deleted_ts?.replace(".000","")?.toLong() ?: 0
     fun getEventTimestamp() : Long =  event_ts?.replace(".000","")?.toLong() ?: 0
 }
-
-
-
